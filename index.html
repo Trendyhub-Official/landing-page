@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>셀러 오퍼레이션 허브</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0e10;--surface:#18181c;--surface2:#222228;--surface3:#2a2a32;
+  --border:#2e2e38;--border2:#3a3a48;
+  --accent:#ff5c35;--accent2:#ffb800;--accent3:#4ade80;--accent4:#60a5fa;
+  --text:#f0f0f5;--text-dim:#7a7a90;--text-mid:#b0b0c8;
+  --red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--green:#4ade80;
+  --r:10px;--r-sm:7px;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* ─── WORKFLOW BAR ─── */
+.wf-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;position:sticky;top:0;z-index:100;overflow-x:auto}
+.wf-inner{display:flex;align-items:center;gap:12px;min-width:max-content}
+.wf-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);text-transform:uppercase;white-space:nowrap}
+.wf-step{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .15s;user-select:none}
+.wf-step:hover{border-color:var(--accent);color:var(--accent)}
+.wf-step.done{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.3);color:var(--green)}
+.wf-arrow{color:var(--border2);font-size:14px}
+.wf-date{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap}
+
+/* ─── MAIN NAV ─── */
+.main-nav{display:flex;gap:4px;padding:16px 20px 0;position:relative;z-index:1;border-bottom:1px solid var(--border)}
+.main-nav-btn{background:transparent;border:none;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;transition:all .15s;white-space:nowrap}
+.main-nav-btn:hover{color:var(--text);background:var(--surface)}
+.main-nav-btn.active{color:var(--text);background:var(--surface);border:1px solid var(--border);border-bottom:1px solid var(--surface)}
+
+/* ─── SECTIONS ─── */
+.main-sec{display:none;padding:20px;position:relative;z-index:1;max-width:760px;margin:0 auto}
+.main-sec.active{display:block}
+
+/* ─── CARDS ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px}
+.card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
+
+/* ─── BANK SETTINGS ─── */
+.bank-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
+.bank-bar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.bank-bar-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.bank-saved-badge{font-size:11px;color:var(--green);display:none}
+.bank-saved-badge.show{display:inline}
+.bank-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.bank-btn{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text-mid);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:5px 10px;cursor:pointer;transition:all .15s}
+.bank-btn:hover{border-color:var(--accent);color:var(--accent)}
+.bank-btn.active{background:rgba(255,92,53,.1);border-color:var(--accent);color:var(--accent);font-weight:700}
+.settings-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.settings-row .field{margin:0}
+.save-btn{background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap}
+.save-btn:hover{background:#ff3d18}
+
+/* ─── SMS SUB-NAV ─── */
+.sms-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.sms-nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.sms-nav-btn:hover{border-color:var(--text-mid);color:var(--text)}
+.sms-nav-btn.active{background:rgba(255,92,53,.1);border-color:var(--accent);color:var(--accent);font-weight:700}
+
+/* ─── SMS TEMPLATE SECTIONS ─── */
+.sms-sec{display:none}
+.sms-sec.active{display:block}
+
+/* ─── STEP FLOW (for multi-step templates) ─── */
+.step-flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.step-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.step-btn:hover{border-color:var(--text-mid);color:var(--text)}
+.step-btn.active{background:rgba(96,165,250,.1);border-color:var(--accent4);color:var(--accent4);font-weight:600}
+.step-num{font-family:'Space Mono',monospace;font-size:10px;background:var(--border);border-radius:3px;padding:1px 5px}
+.step-btn.active .step-num{background:rgba(96,165,250,.2);color:var(--accent4)}
+
+/* ─── FIELDS ─── */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:5px;letter-spacing:.03em}
+.field input,.field textarea,.field select{width:100%;padding:9px 12px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);outline:none;transition:border-color .15s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);background:var(--surface3)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text-dim)}
+.field select option{background:var(--surface2)}
+.field textarea{resize:vertical;min-height:70px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-row .field{margin:0}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.field-row-3 .field{margin:0}
+
+/* ─── TOGGLE ─── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;margin-bottom:12px}
+.toggle-label-text{font-size:13px;color:var(--text-mid)}
+.toggle{position:relative;width:38px;height:21px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#3a3a48;border-radius:999px;cursor:pointer;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:#888;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:rgba(255,92,53,.4)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(17px);background:var(--accent)}
+
+/* ─── PREVIEW ─── */
+.preview-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-all;min-height:160px}
+.hl{background:rgba(255,92,53,.12);color:#ffb088;border-radius:3px;padding:0 3px;font-weight:500}
+.char-count{font-size:11px;color:var(--text-dim);text-align:right;margin-top:5px;font-family:'Space Mono',monospace}
+.divider{height:1px;background:var(--border);margin:12px 0}
+.actions{display:flex;gap:8px}
+.btn{flex:1;padding:10px 0;font-size:13px;font-weight:600;font-family:'Noto Sans KR',sans-serif;border-radius:var(--r-sm);border:1px solid var(--border);cursor:pointer;transition:all .15s}
+.btn-copy{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn-copy:hover{background:#ff3d18}
+.btn-copy:active{transform:scale(.98)}
+.btn-reset{background:transparent;color:var(--text-dim)}
+.btn-reset:hover{background:var(--surface2);color:var(--text)}
+.btn-copy:disabled{background:#444;border-color:#444;cursor:not-allowed;opacity:.5}
+
+/* ─── COST CALCULATOR ─── */
+.month-selector{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.month-selector input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:7px 12px;outline:none}
+.month-selector input:focus{border-color:var(--accent)}
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cost-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.cost-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cost-item-name{font-size:12px;font-weight:700;color:var(--text-mid)}
+.cost-item-type{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700}
+.type-seller{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.type-buyer{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.2)}
+.cost-count-input{width:70px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:16px;font-weight:700;padding:6px 10px;text-align:center;outline:none}
+.cost-count-input:focus{border-color:var(--accent)}
+.cost-sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+.cost-result{font-size:13px;color:var(--orange);font-weight:700;font-family:'Space Mono',monospace;margin-top:6px}
+.shipping-settings{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.shipping-settings-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.shipping-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.total-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;align-items:center;justify-content:space-between}
+.total-label{font-size:14px;color:var(--text-mid)}
+.total-amount{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--red)}
+.export-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;margin-top:10px}
+.export-btn:hover{border-color:var(--accent4);color:var(--accent4)}
+
+/* ─── FU TRACKER ─── */
+.fu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.fu-add-btn{background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:var(--r-sm);cursor:pointer;transition:background .15s}
+.fu-add-btn:hover{background:#ff3d18}
+.fu-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fu-filter-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:4px 12px;cursor:pointer;transition:all .15s}
+.fu-filter-btn:hover{border-color:var(--text-mid);color:var(--text)}
+.fu-filter-btn.active{background:rgba(96,165,250,.1);border-color:var(--accent4);color:var(--accent4)}
+.fu-list{display:flex;flex-direction:column;gap:10px}
+.fu-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px;transition:border-color .15s}
+.fu-card:hover{border-color:var(--border2)}
+.fu-card.urgent{border-left:3px solid var(--red)}
+.fu-card.warning{border-left:3px solid var(--yellow)}
+.fu-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.fu-card-info{}
+.fu-card-market{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+.fu-card-product{font-size:14px;font-weight:600;color:var(--text);margin-top:2px}
+.fu-card-order{font-family:'Space Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:2px}
+.fu-deadline-badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:4px;white-space:nowrap;font-family:'Space Mono',monospace}
+.deadline-urgent{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.3)}
+.deadline-warning{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.3)}
+.deadline-ok{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.3)}
+.deadline-done{background:var(--surface2);color:var(--text-dim);border:1px solid var(--border)}
+.fu-stages{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px}
+.fu-stage{font-size:11px;padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .15s;border:1px solid var(--border);color:var(--text-dim);background:var(--surface2)}
+.fu-stage:hover{border-color:var(--text-mid);color:var(--text)}
+.fu-stage.done{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:var(--green)}
+.fu-stage.current{background:rgba(96,165,250,.1);border-color:var(--accent4);color:var(--accent4);font-weight:700}
+.fu-card-actions{display:flex;gap:6px}
+.fu-btn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:4px 10px;cursor:pointer;transition:all .15s}
+.fu-btn:hover{border-color:var(--text-mid);color:var(--text)}
+.fu-btn-del{color:rgba(248,113,113,.5)}
+.fu-btn-del:hover{border-color:var(--red);color:var(--red)}
+.fu-btn-adv{color:rgba(96,165,250,.5)}
+.fu-btn-adv:hover{border-color:var(--accent4);color:var(--accent4)}
+.fu-empty{text-align:center;padding:40px;color:var(--text-dim);font-size:14px}
+.fu-notes{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:7px 10px;outline:none;resize:none;margin-top:6px}
+.fu-notes:focus{border-color:var(--accent)}
+
+/* ─── FU ADD MODAL ─── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.active{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;max-width:420px;width:90%;animation:modalIn .2s ease both}
+@keyframes modalIn{from{transform:scale(.95) translateY(10px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal h3{font-size:16px;font-weight:700;margin-bottom:16px}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-submit{flex:1;background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:var(--r-sm);cursor:pointer}
+.modal-cancel-btn{flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:11px;border-radius:var(--r-sm);cursor:pointer}
+
+/* ─── MANUAL ─── */
+.manual-section{margin-bottom:24px}
+.manual-section h2{font-size:16px;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.manual-step{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.manual-step-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);font-weight:700;margin-bottom:4px}
+.manual-step-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.manual-step-desc{font-size:13px;color:var(--text-mid);line-height:1.6}
+.code-block{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-sm);padding:12px;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);margin:8px 0;overflow-x:auto}
+.tip-box{background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.2);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--accent4);line-height:1.6}
+.warning-box{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--red);line-height:1.6;margin-bottom:10px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:9px 20px;border-radius:999px;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap;z-index:300}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── MISC ─── */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.05em}
+.badge-zigzag{background:rgba(255,75,119,.1);color:#ff4b77;border:1px solid rgba(255,75,119,.3)}
+.badge-china{background:rgba(255,184,0,.1);color:var(--accent2);border:1px solid rgba(255,184,0,.3)}
+.badge-new{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.3)}
+.badge-day{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
+.day-banner{display:flex;align-items:center;gap:8px;background:rgba(255,92,53,.06);border:1px solid rgba(255,92,53,.15);border-radius:var(--r-sm);padding:9px 12px;margin-bottom:12px;font-size:13px;color:var(--text-mid)}
+.day-banner strong{color:var(--accent)}
+.section-hdr{display:flex;align-items:center;gap:12px;margin:20px 0 12px}
+.section-hdr h2{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
+.section-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
+@media(max-width:600px){
+  .cost-grid{grid-template-columns:1fr}
+  .shipping-row,.settings-row,.field-row,.field-row-3{grid-template-columns:1fr}
+  .main-nav{overflow-x:auto;flex-wrap:nowrap}
+  .main-nav-btn{font-size:12px;padding:6px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ WORKFLOW BAR ══════════ -->
+<div class="wf-bar">
+  <div class="wf-inner">
+    <span class="wf-label">오늘의 워크플로우</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="쿠팡/스마트스토어/각 마켓 신규주문 확인 및 발주">📦 주문처리</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="취소 요청 확인 및 처리">❌ 취소처리</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="반품 신청 건 확인 및 고객 안내 문자 발송">↩️ 반품접수</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="교환 신청 건 확인 및 처리">🔄 교환접수</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="고객 문의 답변 처리">💬 문의답변</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="옵션변경/품절/배송지연 건 처리">⚙️ 옵션/품절</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="수거완료 건 확인 및 각 마켓 업데이트">✅ 수거확인</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="도매처(도매꾹/오너클랜/셀파) 반품/환불 확인">🏭 도매처확인</span>
+    <span class="wf-arrow">→</span>
+    <span class="wf-step" onclick="toggleWf(this)" title="새 상품 소싱 및 스마트스토어/쿠팡 업로드">📸 상품업로드</span>
+    <span class="wf-date" id="wf-date"></span>
+  </div>
+</div>
+
+<!-- ══════════ MAIN NAV ══════════ -->
+<div style="position:relative;z-index:1;padding:0 20px;background:var(--bg)">
+  <nav class="main-nav">
+    <button class="main-nav-btn active" onclick="switchMain('sms',this)">📱 문자발송</button>
+    <button class="main-nav-btn" onclick="switchMain('cost',this)">💰 비용계산</button>
+    <button class="main-nav-btn" onclick="switchMain('fu',this)">🔄 반품·교환 FU</button>
+    <button class="main-nav-btn" onclick="switchMain('manual',this)">📖 클로드 매뉴얼</button>
+  </nav>
+</div>
+
+<!-- ══════════ SMS TAB ══════════ -->
+<div class="main-sec active" id="sec-sms">
+
+  <!-- 은행 설정 -->
+  <div class="bank-bar">
+    <div class="bank-bar-header">
+      <span class="bank-bar-title">🏦 계좌 설정 (전체 템플릿 공통 적용)</span>
+      <span class="bank-saved-badge" id="bank-saved-badge">✓ 저장됨</span>
+    </div>
+    <div class="bank-btns" id="bank-btns">
+      <button class="bank-btn active" onclick="selectBank('카카오뱅크',this)">카카오뱅크</button>
+      <button class="bank-btn" onclick="selectBank('국민은행',this)">국민은행</button>
+      <button class="bank-btn" onclick="selectBank('신한은행',this)">신한은행</button>
+      <button class="bank-btn" onclick="selectBank('우리은행',this)">우리은행</button>
+      <button class="bank-btn" onclick="selectBank('하나은행',this)">하나은행</button>
+      <button class="bank-btn" onclick="selectBank('기업은행',this)">기업은행</button>
+      <button class="bank-btn" onclick="selectBank('농협은행',this)">농협은행</button>
+      <button class="bank-btn" onclick="selectBank('토스뱅크',this)">토스뱅크</button>
+      <button class="bank-btn" onclick="selectBank('케이뱅크',this)">케이뱅크</button>
+    </div>
+    <div class="settings-row">
+      <div class="field"><label>계좌번호 *</label><input id="g-account" type="text" placeholder="3333-01-1234567" oninput="gUpdate()"></div>
+      <div class="field"><label>예금주 *</label><input id="g-holder" type="text" placeholder="홍길동" oninput="gUpdate()"></div>
+      <div class="field"><label>쇼핑몰명 (기본값) *</label><input id="g-shop" type="text" placeholder="네이버 스마트스토어" oninput="gUpdate()"></div>
+    </div>
+    <button class="save-btn" onclick="saveSettings()">💾 설정 저장</button>
+  </div>
+
+  <!-- SMS 서브 탭 -->
+  <div class="sms-nav">
+    <button class="sms-nav-btn active" onclick="switchSms('return-simple',this)">↩️ 반품 (단순변심)</button>
+    <button class="sms-nav-btn" onclick="switchSms('return-reason',this)">🔍 반품 (사유확인)</button>
+    <button class="sms-nav-btn" onclick="switchSms('exchange',this)">🔄 교환</button>
+    <button class="sms-nav-btn" onclick="switchSms('oos',this)">🚫 품절</button>
+    <button class="sms-nav-btn" onclick="switchSms('option',this)">⚙️ 옵션변경</button>
+    <button class="sms-nav-btn" onclick="switchSms('delay',this)">⏰ 배송지연</button>
+    <button class="sms-nav-btn" onclick="switchSms('zigzag',this)">🏷️ 지그재그 반품비</button>
+    <button class="sms-nav-btn" onclick="switchSms('china',this)">🇨🇳 중국구매대행</button>
+  </div>
+
+  <!-- ── 반품 단순변심 ── -->
+  <div class="sms-sec active" id="sms-return-simple">
+    <div class="card">
+      <div class="card-title">반품 안내 · 단순변심</div>
+      <div class="day-banner" id="day-banner-rs"></div>
+      <div class="field"><label>쇼핑몰명</label><input id="rs-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('rs')"></div>
+      <div class="field"><label>상품명 *</label><input id="rs-product" type="text" placeholder="예) 재활용 비닐봉투 50매 60L" oninput="upd('rs')"></div>
+      <div class="field"><label>주문번호 (선택)</label><input id="rs-order" type="text" placeholder="입력 시 문자에 포함됩니다" oninput="upd('rs')"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">미리보기</div>
+      <div class="preview-box" id="rs-preview"></div>
+      <div class="char-count" id="rs-count"></div>
+      <div class="divider"></div>
+      <div class="actions">
+        <button class="btn btn-reset" onclick="reset('rs')">초기화</button>
+        <button class="btn btn-copy" id="rs-copy-btn" onclick="copy('rs')">문자 복사</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 반품 사유확인 ── -->
+  <div class="sms-sec" id="sms-return-reason">
+    <div class="step-flow">
+      <button class="step-btn active" onclick="switchStep('rr','B',this)"><span class="step-num">1</span>사진 요청</button>
+      <button class="step-btn" onclick="switchStep('rr','C1',this)"><span class="step-num">2</span>판매자귀책 수거안내</button>
+      <button class="step-btn" onclick="switchStep('rr','C2',this)"><span class="step-num">3</span>구매자귀책 사유변경요청</button>
+    </div>
+    <!-- B -->
+    <div class="step-sec active" id="rr-B">
+      <div class="card">
+        <div class="card-title">반품 사유 확인 · 사진 요청</div>
+        <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="rrB-safe" onchange="updStep('rr','B')"><span class="toggle-slider"></span></label></div>
+        <div class="field"><label>쇼핑몰명</label><input id="rrB-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','B')"></div>
+        <div class="field"><label>상품명 *</label><input id="rrB-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','B')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="rrB-order" type="text" placeholder="선택" oninput="updStep('rr','B')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrB-preview"></div><div class="char-count" id="rrB-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrB')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','B')">문자 복사</button></div></div>
+    </div>
+    <!-- C1 -->
+    <div class="step-sec" id="rr-C1">
+      <div class="card">
+        <div class="card-title">반품 사유 확인 · 판매자 귀책 → 수거 안내</div>
+        <div class="field"><label>쇼핑몰명</label><input id="rrC1-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','C1')"></div>
+        <div class="field"><label>상품명 *</label><input id="rrC1-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','C1')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="rrC1-order" type="text" oninput="updStep('rr','C1')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrC1-preview"></div><div class="char-count" id="rrC1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrC1')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','C1')">문자 복사</button></div></div>
+    </div>
+    <!-- C2 -->
+    <div class="step-sec" id="rr-C2">
+      <div class="card">
+        <div class="card-title">반품 사유 확인 · 구매자 귀책 → 단순변심 사유 변경 요청</div>
+        <div class="field"><label>쇼핑몰명</label><input id="rrC2-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','C2')"></div>
+        <div class="field"><label>상품명 *</label><input id="rrC2-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','C2')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="rrC2-order" type="text" oninput="updStep('rr','C2')"></div>
+        <div class="field"><label>상세페이지 근거 내용 *</label><input id="rrC2-reason" type="text" placeholder="예) 사이즈가 기재되어 있으므로" oninput="updStep('rr','C2')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrC2-preview"></div><div class="char-count" id="rrC2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrC2')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','C2')">문자 복사</button></div></div>
+    </div>
+  </div>
+
+  <!-- ── 교환 ── -->
+  <div class="sms-sec" id="sms-exchange">
+    <div class="step-flow">
+      <button class="step-btn active" onclick="switchStep('ex','E1',this)"><span class="step-num">1</span>교환+배송비안내</button>
+      <button class="step-btn" onclick="switchStep('ex','E1b',this)"><span class="step-num">2</span>입금확인</button>
+      <button class="step-btn" onclick="switchStep('ex','E2',this)"><span class="step-num">3</span>사진요청(판매자귀책)</button>
+      <button class="step-btn" onclick="switchStep('ex','E3',this)"><span class="step-num">4</span>수거안내</button>
+      <button class="step-btn" onclick="switchStep('ex','G',this)"><span class="step-num">5</span>재발송완료</button>
+    </div>
+    <!-- E1 -->
+    <div class="step-sec active" id="ex-E1">
+      <div class="card">
+        <div class="card-title">교환 · 배송비 안내 (고객 부담)</div>
+        <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="exE1-safe" onchange="updStep('ex','E1')"><span class="toggle-slider"></span></label></div>
+        <div class="field"><label>쇼핑몰명</label><input id="exE1-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E1')"></div>
+        <div class="field"><label>상품명 *</label><input id="exE1-product" type="text" placeholder="상품명 입력" oninput="updStep('ex','E1')"></div>
+        <div class="field-row">
+          <div class="field"><label>주문번호 (선택)</label><input id="exE1-order" type="text" oninput="updStep('ex','E1')"></div>
+          <div class="field"><label>교환 옵션 *</label><input id="exE1-option" type="text" placeholder="예) 화이트 XL" oninput="updStep('ex','E1')"></div>
+        </div>
+        <div class="field"><label>배송비 금액 *</label><input id="exE1-amount" type="text" placeholder="예) 6000" oninput="updStep('ex','E1')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE1-preview"></div><div class="char-count" id="exE1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE1')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E1')">문자 복사</button></div></div>
+    </div>
+    <!-- E1b -->
+    <div class="step-sec" id="ex-E1b">
+      <div class="card">
+        <div class="card-title">교환 · 입금 확인</div>
+        <div class="field"><label>쇼핑몰명</label><input id="exE1b-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E1b')"></div>
+        <div class="field"><label>상품명 *</label><input id="exE1b-product" type="text" placeholder="상품명 입력" oninput="updStep('ex','E1b')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="exE1b-order" type="text" oninput="updStep('ex','E1b')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE1b-preview"></div><div class="char-count" id="exE1b-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE1b')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E1b')">문자 복사</button></div></div>
+    </div>
+    <!-- E2 -->
+    <div class="step-sec" id="ex-E2">
+      <div class="card">
+        <div class="card-title">교환 · 사진 요청 (판매자 귀책 확인)</div>
+        <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="exE2-safe" onchange="updStep('ex','E2')"><span class="toggle-slider"></span></label></div>
+        <div class="field"><label>쇼핑몰명</label><input id="exE2-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E2')"></div>
+        <div class="field"><label>상품명 *</label><input id="exE2-product" type="text" oninput="updStep('ex','E2')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="exE2-order" type="text" oninput="updStep('ex','E2')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE2-preview"></div><div class="char-count" id="exE2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE2')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E2')">문자 복사</button></div></div>
+    </div>
+    <!-- E3 -->
+    <div class="step-sec" id="ex-E3">
+      <div class="card">
+        <div class="card-title">교환 · 판매자 귀책 → 수거 안내</div>
+        <div class="field"><label>쇼핑몰명</label><input id="exE3-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E3')"></div>
+        <div class="field"><label>상품명 *</label><input id="exE3-product" type="text" oninput="updStep('ex','E3')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="exE3-order" type="text" oninput="updStep('ex','E3')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE3-preview"></div><div class="char-count" id="exE3-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE3')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E3')">문자 복사</button></div></div>
+    </div>
+    <!-- G -->
+    <div class="step-sec" id="ex-G">
+      <div class="card">
+        <div class="card-title">교환 · 재발송 완료</div>
+        <div class="field"><label>쇼핑몰명</label><input id="exG-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','G')"></div>
+        <div class="field"><label>상품명 *</label><input id="exG-product" type="text" oninput="updStep('ex','G')"></div>
+        <div class="field-row">
+          <div class="field"><label>주문번호 (선택)</label><input id="exG-order" type="text" oninput="updStep('ex','G')"></div>
+          <div class="field"><label>교환 송장번호 *</label><input id="exG-tracking" type="text" placeholder="예) 123456789012" oninput="updStep('ex','G')"></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exG-preview"></div><div class="char-count" id="exG-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exG')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','G')">문자 복사</button></div></div>
+    </div>
+  </div>
+
+  <!-- ── 품절 ── -->
+  <div class="sms-sec" id="sms-oos">
+    <div class="card">
+      <div class="card-title">품절 안내</div>
+      <div class="field"><label>쇼핑몰명</label><input id="oos-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('oos')"></div>
+      <div class="field"><label>상품명 *</label><input id="oos-product" type="text" placeholder="상품명 입력" oninput="upd('oos')"></div>
+      <div class="field"><label>주문번호 (선택)</label><input id="oos-order" type="text" oninput="upd('oos')"></div>
+    </div>
+    <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="oos-preview"></div><div class="char-count" id="oos-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('oos')">초기화</button><button class="btn btn-copy" onclick="copy('oos')">문자 복사</button></div></div>
+  </div>
+
+  <!-- ── 옵션변경 ── -->
+  <div class="sms-sec" id="sms-option">
+    <div class="card">
+      <div class="card-title">옵션변경 안내</div>
+      <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="opt-safe" onchange="upd('opt')"><span class="toggle-slider"></span></label></div>
+      <div class="field"><label>쇼핑몰명</label><input id="opt-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('opt')"></div>
+      <div class="field"><label>상품명 *</label><input id="opt-product" type="text" placeholder="상품명 입력" oninput="upd('opt')"></div>
+      <div class="field"><label>주문번호 (선택)</label><input id="opt-order" type="text" oninput="upd('opt')"></div>
+      <div class="field-row">
+        <div class="field"><label>품절된 옵션 *</label><input id="opt-soldout" type="text" placeholder="예) 블랙 XL" oninput="upd('opt')"></div>
+        <div class="field"><label>대체 가능 옵션 *</label><input id="opt-alternative" type="text" placeholder="예) 화이트 XL" oninput="upd('opt')"></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="opt-preview"></div><div class="char-count" id="opt-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('opt')">초기화</button><button class="btn btn-copy" onclick="copy('opt')">문자 복사</button></div></div>
+  </div>
+
+  <!-- ── 배송지연 ── -->
+  <div class="sms-sec" id="sms-delay">
+    <div class="card">
+      <div class="card-title">배송지연 안내</div>
+      <div class="field"><label>쇼핑몰명</label><input id="dly-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('dly')"></div>
+      <div class="field"><label>상품명 *</label><input id="dly-product" type="text" placeholder="상품명 입력" oninput="upd('dly')"></div>
+      <div class="field"><label>주문번호 (선택)</label><input id="dly-order" type="text" oninput="upd('dly')"></div>
+      <div class="field">
+        <label>지연 사유</label>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <button class="step-btn active" id="dly-type-btn-폭주" onclick="setDlyType('폭주')"><span class="step-num">A</span>주문 폭주</button>
+          <button class="step-btn" id="dly-type-btn-기타" onclick="setDlyType('기타')"><span class="step-num">B</span>직접 입력</button>
+        </div>
+        <div id="dly-폭주-input"><label>재입고 예정일 *</label><input id="dly-restock" type="text" placeholder="예) 12월 20일" oninput="upd('dly')"></div>
+        <div id="dly-기타-input" style="display:none"><label>지연 사유 직접 입력</label><textarea id="dly-custom" rows="2" placeholder="예) 택배사 물량 증가로 배송이 지연되고 있습니다." oninput="upd('dly')"></textarea></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="dly-preview"></div><div class="char-count" id="dly-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('dly')">초기화</button><button class="btn btn-copy" onclick="copy('dly')">문자 복사</button></div></div>
+  </div>
+
+  <!-- ── 지그재그 반품배송비 ── -->
+  <div class="sms-sec" id="sms-zigzag">
+    <div class="card">
+      <div class="card-title">지그재그 · 단순변심 반품 배송비 안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">왕복 배송비</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">7,000원</div></div>
+        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">자동 차감</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">3,500원</div></div>
+        <div style="flex:1;background:rgba(255,92,53,.08);border:1px solid rgba(255,92,53,.2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">추가 입금</div><div style="font-size:15px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace">3,500원</div></div>
+      </div>
+      <div class="field"><label>상품명 *</label><input id="zz-product" type="text" placeholder="상품명 입력" oninput="upd('zz')"></div>
+      <div class="field"><label>주문번호 (선택)</label><input id="zz-order" type="text" oninput="upd('zz')"></div>
+    </div>
+    <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zz-preview"></div><div class="char-count" id="zz-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('zz')">초기화</button><button class="btn btn-copy" onclick="copy('zz')">문자 복사</button></div></div>
+  </div>
+
+  <!-- ── 중국구매대행 ── -->
+  <div class="sms-sec" id="sms-china">
+    <div class="step-flow">
+      <button class="step-btn active" onclick="switchStep('cn','kdx',this)"><span class="step-num">A</span>경동택배비 안내</button>
+      <button class="step-btn" onclick="switchStep('cn','intl',this)"><span class="step-num">B</span>해외배송 소요 안내</button>
+    </div>
+    <!-- 경동택배비 -->
+    <div class="step-sec active" id="cn-kdx">
+      <div class="card">
+        <div class="card-title">경동택배비 발생 · 입금 안내 <span class="badge badge-china">중국대행</span></div>
+        <div class="field"><label>쇼핑몰명</label><input id="cnKdx-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('cn','kdx')"></div>
+        <div class="field"><label>상품명 *</label><input id="cnKdx-product" type="text" placeholder="상품명 입력" oninput="updStep('cn','kdx')"></div>
+        <div class="field-row">
+          <div class="field"><label>주문번호 (선택)</label><input id="cnKdx-order" type="text" oninput="updStep('cn','kdx')"></div>
+          <div class="field"><label>경동택배비 금액 *</label><input id="cnKdx-fee" type="text" placeholder="예) 5000" oninput="updStep('cn','kdx')"></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="cnKdx-preview"></div><div class="char-count" id="cnKdx-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('cnKdx')">초기화</button><button class="btn btn-copy" onclick="copyStep('cn','kdx')">문자 복사</button></div></div>
+    </div>
+    <!-- 해외배송 안내 -->
+    <div class="step-sec" id="cn-intl">
+      <div class="card">
+        <div class="card-title">해외배송 소요 안내 <span class="badge badge-china">중국대행</span></div>
+        <div class="field"><label>쇼핑몰명</label><input id="cnIntl-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('cn','intl')"></div>
+        <div class="field"><label>상품명 *</label><input id="cnIntl-product" type="text" placeholder="상품명 입력" oninput="updStep('cn','intl')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="cnIntl-order" type="text" oninput="updStep('cn','intl')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="cnIntl-preview"></div><div class="char-count" id="cnIntl-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('cnIntl')">초기화</button><button class="btn btn-copy" onclick="copyStep('cn','intl')">문자 복사</button></div></div>
+    </div>
+  </div>
+
+</div>
+<!-- /SMS TAB -->
+
+<!-- ══════════ 비용계산 TAB ══════════ -->
+<div class="main-sec" id="sec-cost">
+  <div class="section-hdr"><h2>월별 비용 계산기</h2></div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div class="month-selector"><input type="month" id="cost-month"></div>
+    <button class="export-btn" onclick="exportCost()">📋 노션/메모에 붙여넣기용 내보내기</button>
+  </div>
+
+  <div class="shipping-settings">
+    <div class="shipping-settings-title">배송비 단가 설정</div>
+    <div class="shipping-row">
+      <div class="field"><label>편도 배송비 (원)</label><input id="cost-one-way" type="number" value="3500" oninput="calcCost()"></div>
+      <div class="field"><label>왕복 배송비 (원)</label><input id="cost-round-trip" type="number" value="7000" oninput="calcCost()"></div>
+      <div class="field"><label>경동택배 기본 (원)</label><input id="cost-kdx" type="number" value="5000" oninput="calcCost()"></div>
+    </div>
+  </div>
+
+  <div class="cost-grid" id="cost-grid">
+    <!-- JS로 생성 -->
+  </div>
+
+  <div class="card" style="background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase">이번 달 총 손실 비용</div>
+        <div style="font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--red)" id="cost-total">0원</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">총 처리 건수</div>
+        <div style="font-family:'Space Mono',monospace;font-size:18px;color:var(--text-mid)" id="cost-total-count">0건</div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /비용계산 TAB -->
+
+<!-- ══════════ FU TAB ══════════ -->
+<div class="main-sec" id="sec-fu">
+  <div class="fu-header">
+    <div>
+      <div style="font-size:18px;font-weight:700">반품·교환 Follow-Up</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:2px">단계별 진행 현황을 관리하세요</div>
+    </div>
+    <button class="fu-add-btn" onclick="openFuModal()">+ 케이스 추가</button>
+  </div>
+  <div class="fu-filter">
+    <button class="fu-filter-btn active" onclick="filterFu('all',this)">전체</button>
+    <button class="fu-filter-btn" onclick="filterFu('return',this)">반품</button>
+    <button class="fu-filter-btn" onclick="filterFu('exchange',this)">교환</button>
+    <button class="fu-filter-btn" onclick="filterFu('urgent',this)">🔴 마감임박</button>
+    <button class="fu-filter-btn" onclick="filterFu('done',this)">✅ 완료</button>
+  </div>
+  <div class="fu-list" id="fu-list"></div>
+</div>
+<!-- /FU TAB -->
+
+<!-- ══════════ MANUAL TAB ══════════ -->
+<div class="main-sec" id="sec-manual">
+  <div class="section-hdr"><h2>클로드에게 효율적으로 업데이트 요청하는 법</h2></div>
+
+  <div class="warning-box">⚠️ 클로드는 Netlify URL에 직접 접근하여 업데이트할 수 없어요. 항상 <strong>새 HTML 파일을 받아서 재업로드</strong>하는 방식으로 진행해요.</div>
+
+  <div class="manual-section">
+    <h2>📋 Netlify 업데이트 워크플로우</h2>
+    <div class="manual-step"><div class="manual-step-num">STEP 01</div><div class="manual-step-title">클로드에게 요청</div><div class="manual-step-desc">claude.ai 채팅에서 이 HTML 파일을 첨부하고 원하는 내용을 설명하세요. 파일 첨부가 핵심이에요 — 파일 없이 텍스트만 보내면 클로드가 기존 내용을 모릅니다.</div></div>
+    <div class="manual-step"><div class="manual-step-num">STEP 02</div><div class="manual-step-title">새 index.html 다운로드</div><div class="manual-step-desc">클로드가 업데이트된 index.html을 드립니다. 다운로드하세요.</div></div>
+    <div class="manual-step"><div class="manual-step-num">STEP 03</div><div class="manual-step-title">Netlify에 재업로드</div><div class="manual-step-desc">Netlify 대시보드 → Production deploys → 새 파일 드래그앤드롭. 30초 내 자동 배포됩니다.</div></div>
+  </div>
+
+  <div class="manual-section">
+    <h2>✍️ 요청 템플릿 (복사해서 사용)</h2>
+    <div class="code-block">이 HTML 파일에 [추가/수정/삭제] 해줘:
+
+추가: [내용 설명]
+수정: [기존 내용] → [바꿀 내용]
+삭제: [제거할 항목]
+
+요청사항 예시:
+- "중국대행 탭에 반품불가 안내 문자 추가해줘"
+- "교환 탭에 6단계 '도매처 교환접수 완료' 스텝 추가"
+- "비용계산기에 이번달 메모 입력란 추가"
+- "FU 탭 반품 단계에 '마켓 승인 기한 D-3 알림' 추가"</div>
+    <div class="tip-box">💡 팁: 요청이 구체적일수록 정확하게 반영돼요. "이런 느낌으로" 보다 "A 위치에 B를 추가"가 훨씬 효과적입니다. 그리고 항상 최신 HTML 파일을 첨부해야 기존 내용이 유지돼요.</div>
+  </div>
+
+  <div class="manual-section">
+    <h2>📁 파일 관리 팁</h2>
+    <div class="manual-step"><div class="manual-step-num">TIP 01</div><div class="manual-step-title">파일 버전 관리</div><div class="manual-step-desc">업데이트 받을 때마다 이전 파일을 "index_20250115.html" 형식으로 날짜 붙여 보관해두면 롤백 가능해요.</div></div>
+    <div class="manual-step"><div class="manual-step-num">TIP 02</div><div class="manual-step-title">로컬 + 넷리파이 병행</div><div class="manual-step-desc">PC에서도 더블클릭으로 열 수 있어요. 인터넷 없어도 됨. 폰에서 쓸 때는 Netlify URL 북마크 사용.</div></div>
+    <div class="manual-step"><div class="manual-step-num">TIP 03</div><div class="manual-step-title">데이터 주의사항</div><div class="manual-step-desc">FU 케이스, 비용 데이터는 브라우저 localStorage에 저장돼요. 브라우저 데이터를 지우면 초기화됩니다. 중요한 데이터는 "내보내기"로 백업해두세요.</div></div>
+  </div>
+
+  <div class="manual-section">
+    <h2>🔗 자주 쓰는 링크 모음</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="https://seller.coupang.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">📦 쿠팡 판매자센터</a>
+      <a href="https://sell.smartstore.naver.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🟢 스마트스토어 센터</a>
+      <a href="https://www.domae9.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🏭 도매꾹</a>
+      <a href="https://www.ownerclan.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🏭 오너클랜</a>
+      <a href="https://app.netlify.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🌐 Netlify 대시보드</a>
+      <a href="https://claude.ai" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🤖 Claude.ai</a>
+    </div>
+  </div>
+</div>
+<!-- /MANUAL TAB -->
+
+<!-- FU ADD MODAL -->
+<div class="modal-overlay" id="fu-modal" onclick="if(event.target===this)closeFuModal()">
+  <div class="modal">
+    <h3>➕ 반품·교환 케이스 추가</h3>
+    <div class="field-row">
+      <div class="field"><label>유형</label><select id="fu-type"><option value="return">반품</option><option value="exchange">교환</option></select></div>
+      <div class="field"><label>마켓</label><select id="fu-market"><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>기타</option></select></div>
+    </div>
+    <div class="field"><label>상품명 *</label><input id="fu-product" type="text" placeholder="상품명 입력"></div>
+    <div class="field"><label>주문번호</label><input id="fu-order" type="text" placeholder="선택사항"></div>
+    <div class="field"><label>마감일 (처리 기한)</label><input id="fu-deadline" type="date"></div>
+    <div class="field"><label>메모</label><input id="fu-note" type="text" placeholder="특이사항, 귀책 등"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel-btn" onclick="closeFuModal()">취소</button>
+      <button class="modal-submit" onclick="addFuCase()">추가</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// GLOBAL STATE & SETTINGS
+// ══════════════════════════════════════════
+let G = {
+  bank: localStorage.getItem('g-bank') || '카카오뱅크',
+  account: localStorage.getItem('g-account') || '',
+  holder: localStorage.getItem('g-holder') || '',
+  shop: localStorage.getItem('g-shop') || '',
+};
+let dlyType = '폭주';
+
+function gV(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
+function hl(t){ return `<span class="hl">${t}</span>`; }
+function gAccount(){ return gV('g-account')||G.account||'[계좌번호]'; }
+function gHolder(){ return gV('g-holder')||G.holder||'[예금주명]'; }
+function gBank(){ return document.getElementById('bank-btns')?G.bank:'카카오뱅크'; }
+function gShop(id){ return gV(id)||G.shop||'[쇼핑몰명]'; }
+const safeLine = '\n\n※ 본 문자는 안심번호로 발송되어 회신 시 확인이 어렵습니다.\n성함과 함께 본 문자에 답변해 주시면 확인 가능합니다.';
+
+function selectBank(name, el){
+  G.bank=name;
+  document.querySelectorAll('.bank-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  refreshAll();
+}
+function gUpdate(){ refreshAll(); }
+function saveSettings(){
+  G.bank=G.bank;
+  G.account=gV('g-account'); G.holder=gV('g-holder'); G.shop=gV('g-shop');
+  localStorage.setItem('g-bank',G.bank);
+  localStorage.setItem('g-account',G.account);
+  localStorage.setItem('g-holder',G.holder);
+  localStorage.setItem('g-shop',G.shop);
+  document.getElementById('bank-saved-badge').classList.add('show');
+  showToast('✓ 설정이 저장되었습니다');
+  refreshAll();
+}
+function loadSettings(){
+  document.getElementById('g-account').value=G.account;
+  document.getElementById('g-holder').value=G.holder;
+  document.getElementById('g-shop').value=G.shop;
+  document.querySelectorAll('.bank-btn').forEach(b=>{
+    if(b.textContent===G.bank) b.classList.add('active'); else b.classList.remove('active');
+  });
+  if(G.account) document.getElementById('bank-saved-badge').classList.add('show');
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function switchMain(id, el){
+  document.querySelectorAll('.main-sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.main-nav-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function switchSms(id, el){
+  document.querySelectorAll('.sms-sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sms-'+id).classList.add('active');
+  document.querySelectorAll('.sms-nav-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  refreshAll();
+}
+function switchStep(group, step, el){
+  const sec = document.getElementById('sms-'+group)||document.getElementById('sec-sms');
+  // deactivate all steps in this group
+  el.closest('.sms-sec,#sec-sms').querySelectorAll('.step-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  el.closest('.sms-sec').querySelectorAll('.step-sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById(group+'-'+step).classList.add('active');
+  refreshAll();
+}
+
+// ══════════════════════════════════════════
+// MESSAGE BUILDERS
+// ══════════════════════════════════════════
+
+// rs - 반품 단순변심
+function buildRs(plain){
+  const shop=gShop('rs-shop'), product=gV('rs-product')||'[상품명]';
+  const order=gV('rs-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const schedule=getSchedule();
+  if(!schedule) return plain?'오늘(토·일)은 수거 안내 발송일이 아닙니다.':
+    '<span style="color:var(--text-dim)">오늘(토·일)은 수거 안내 발송일이 아닙니다.</span>';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${schedule} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${hl(schedule)} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
+}
+
+// rrB - 반품 사유확인 사진요청
+function buildRrB(plain){
+  const shop=gShop('rrB-shop'), product=gV('rrB-product')||'[상품명]';
+  const order=gV('rrB-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const safe=document.getElementById('rrB-safe')?.checked;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 절차상 불편하셨던 부분과 관련하여, 정확한 확인을 위해 사진 한 장 부탁드려도 될까요?\n\n확인 후 신속하게 처리해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 절차상 불편하셨던 부분과 관련하여, 정확한 확인을 위해 사진 한 장 부탁드려도 될까요?\n\n확인 후 신속하게 처리해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
+}
+// rrC1 - 판매자귀책 수거
+function buildRrC1(plain){
+  const shop=gShop('rrC1-shop'), product=gV('rrC1-product')||'[상품명]';
+  const order=gV('rrC1-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n불편을 드린 점 진심으로 사과드립니다.\n\n반품 접수 후 3일 이내 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n불편을 드린 점 진심으로 사과드립니다.\n\n${hl('반품 접수 후 3일 이내')} 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다. 감사합니다.`;
+}
+// rrC2 - 구매자귀책
+function buildRrC2(plain){
+  const shop=gShop('rrC2-shop'), product=gV('rrC2-product')||'[상품명]';
+  const order=gV('rrC2-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const reason=gV('rrC2-reason')||'[상세페이지 근거]';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n확인 결과, ${reason} 해당 내용은 상세페이지에 이미 기재된 내용으로 단순변심에 해당됩니다.\n\n반품 진행을 위해 마켓에서 반품 사유를 단순변심으로 변경 후 절차 진행이 가능하오니, 변경 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n확인 결과, ${hl(reason)} 해당 내용은 상세페이지에 이미 기재된 내용으로 단순변심에 해당됩니다.\n\n반품 진행을 위해 마켓에서 반품 사유를 ${hl('단순변심')}으로 변경 후 절차 진행이 가능하오니, 변경 부탁드립니다.\n\n감사합니다.`;
+}
+
+// 교환 builders
+function buildExE1(plain){
+  const shop=gShop('exE1-shop'), product=gV('exE1-product')||'[상품명]';
+  const order=gV('exE1-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const option=gV('exE1-option')||'[교환 옵션]', amount=gV('exE1-amount')||'[금액]';
+  const safe=document.getElementById('exE1-safe')?.checked;
+  const bank=gBank(), acc=gAccount(), holder=gHolder();
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n${option}으로 변경 요청하신 것이 맞으신가요?\n\n교환 진행 시 왕복 배송비가 발생하며,\n아래 계좌로 ${amount}원 입금 후 교환 진행이 가능합니다.\n\n🏦 ${bank} ${acc} (${holder})${safe?safeLine:''}\n\n확인 후 신속하게 처리해 드리겠습니다. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl(option)}으로 변경 요청하신 것이 맞으신가요?\n\n교환 진행 시 왕복 배송비가 발생하며,\n아래 계좌로 ${hl(amount+'원')} 입금 후 교환 진행이 가능합니다.\n\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})${safe?safeLine:''}\n\n확인 후 신속하게 처리해 드리겠습니다. 감사합니다.`;
+}
+function buildExE1b(plain){
+  const shop=gShop('exE1b-shop'), product=gV('exE1b-product')||'[상품명]';
+  const order=gV('exE1b-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n${oStr?oStr:''}입금 확인되었습니다. 감사합니다.\n\n교환 상품 수거를 위해 제품 준비 부탁드리며,\n교환 접수 후 3일 이내 수거 예정입니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n${order?hl(oStr):''}입금 확인되었습니다. 감사합니다.\n\n교환 상품 수거를 위해 제품 준비 부탁드리며,\n${hl('교환 접수 후 3일 이내')} 수거 예정입니다.\n\n감사합니다.`;
+}
+function buildExE2(plain){
+  const shop=gShop('exE2-shop'), product=gV('exE2-product')||'[상품명]';
+  const order=gV('exE2-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const safe=document.getElementById('exE2-safe')?.checked;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n정확한 확인을 위해 제품 이상 부분의 사진 한 장 부탁드려도 될까요?\n\n사진 확인 후 교환 절차 진행해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n정확한 확인을 위해 제품 이상 부분의 사진 한 장 부탁드려도 될까요?\n\n사진 확인 후 교환 절차 진행해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
+}
+function buildExE3(plain){
+  const shop=gShop('exE3-shop'), product=gV('exE3-product')||'[상품명]';
+  const order=gV('exE3-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n사진 확인 결과, 불편을 드린 점 진심으로 사과드립니다.\n교환 절차상 제품 회수 후 재발송으로 진행됩니다.\n\n교환 접수 후 3일 이내 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n사진 확인 결과, 불편을 드린 점 진심으로 사과드립니다.\n교환 절차상 제품 회수 후 재발송으로 진행됩니다.\n\n${hl('교환 접수 후 3일 이내')} 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n감사합니다.`;
+}
+function buildExG(plain){
+  const shop=gShop('exG-shop'), product=gV('exG-product')||'[상품명]';
+  const order=gV('exG-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const tracking=gV('exG-tracking')||'[송장번호]';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${oStr}${product}\n제품이 수거 완료되어 교환 상품을 재발송하였습니다.\n\n📦 송장번호: ${tracking}\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 교환 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n제품이 수거 완료되어 교환 상품을 재발송하였습니다.\n\n📦 송장번호: ${hl(tracking)}\n\n감사합니다.`;
+}
+
+// 품절
+function buildOos(plain){
+  const shop=gShop('oos-shop'), product=gV('oos-product')||'[상품명]';
+  const order=gV('oos-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${oStr}${product}\n상품이 재고 소진으로 인해 품절되어 발송이 어렵게 되었습니다.\n\n빠른 재입고가 불투명한 상황으로,\n고객님께서 직접 주문 취소해 주시면\n마켓 정책에 따라 결제 금액이 신속하게 환불 처리됩니다.\n\n✅ 취소 방법: 주문 내역 → 취소 신청\n\n쇼핑에 불편을 드려 진심으로 죄송합니다.\n문의사항이 있으시면 언제든지 연락 주세요. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n상품이 재고 소진으로 인해 품절되어 발송이 어렵게 되었습니다.\n\n빠른 재입고가 불투명한 상황으로,\n고객님께서 직접 주문 취소해 주시면\n마켓 정책에 따라 결제 금액이 신속하게 환불 처리됩니다.\n\n✅ 취소 방법: 주문 내역 → 취소 신청\n\n쇼핑에 불편을 드려 진심으로 죄송합니다.\n문의사항이 있으시면 언제든지 연락 주세요. 감사합니다.`;
+}
+
+// 옵션변경
+function buildOpt(plain){
+  const shop=gShop('opt-shop'), product=gV('opt-product')||'[상품명]';
+  const order=gV('opt-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const soldout=gV('opt-soldout')||'[품절 옵션]', alt=gV('opt-alternative')||'[대체 옵션]';
+  const safe=document.getElementById('opt-safe')?.checked;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${oStr}${product}\n상품의 [${soldout}] 옵션이 재고 소진으로 발송이 어렵게 되었습니다.\n\n현재 출고 가능한 옵션은 아래와 같습니다.\n✅ ${alt}\n\n위 옵션으로 변경을 원하시면 회신 부탁드립니다.\n변경이 어려우신 경우, 직접 주문 취소해 주시면\n마켓 정책에 따라 결제 금액이 신속하게 환불 처리됩니다.${safe?safeLine:''}\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n상품의 [${hl(soldout)}] 옵션이 재고 소진으로 발송이 어렵게 되었습니다.\n\n현재 출고 가능한 옵션은 아래와 같습니다.\n✅ ${hl(alt)}\n\n위 옵션으로 변경을 원하시면 회신 부탁드립니다.\n변경이 어려우신 경우, 직접 주문 취소해 주시면\n마켓 정책에 따라 결제 금액이 신속하게 환불 처리됩니다.${safe?safeLine:''}\n\n감사합니다.`;
+}
+
+// 배송지연
+function buildDly(plain){
+  const shop=gShop('dly-shop'), product=gV('dly-product')||'[상품명]';
+  const order=gV('dly-order'), oStr=order?`(주문번호: ${order}) `:'';
+  let reasonText;
+  if(dlyType==='폭주'){
+    const d=gV('dly-restock')||'[재입고 예정일]';
+    reasonText=plain?`주문 폭주로 일시 품절되었으며, ${d}에 재입고되어 출고될 예정입니다.`:
+      `주문 폭주로 일시 품절되었으며, ${hl(d)}에 재입고되어 출고될 예정입니다.`;
+  } else {
+    const c=gV('dly-custom')||'[지연 사유]';
+    reasonText=plain?c:hl(c);
+  }
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n${reasonText}\n\n제품 많이 기다리셨을텐데 죄송합니다.\n문의사항이 있으시면 언제든지 연락 주세요. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${reasonText}\n\n제품 많이 기다리셨을텐데 죄송합니다.\n문의사항이 있으시면 언제든지 연락 주세요. 감사합니다.`;
+}
+
+// 지그재그
+function buildZz(plain){
+  const product=gV('zz-product')||'[상품명]';
+  const order=gV('zz-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const acc=gAccount(), holder=gHolder(), bank=gBank();
+  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 7,000원이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 3,500원을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${bank} ${acc} (${holder})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 ${hl('7,000원')}이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 ${hl('3,500원')}을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
+}
+
+// 중국대행 - 경동택배비
+function buildCnKdx(plain){
+  const shop=gShop('cnKdx-shop'), product=gV('cnKdx-product')||'[상품명]';
+  const order=gV('cnKdx-order'), oStr=order?`(주문번호: ${order}) `:'';
+  const fee=gV('cnKdx-fee')||'[금액]';
+  const bank=gBank(), acc=gAccount(), holder=gHolder();
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n해당 상품은 중국에서 직접 수입되는 해외구매대행 상품으로,\n경동택배를 통해 배송되며 별도 배송비 ${fee}원이 발생합니다.\n\n아래 계좌로 입금해 주시면 빠르게 처리해 드리겠습니다.\n🏦 ${bank} ${acc} (${holder})\n\n입금 확인 후 신속하게 발송해 드리겠습니다. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n해당 상품은 중국에서 직접 수입되는 해외구매대행 상품으로,\n경동택배를 통해 배송되며 별도 배송비 ${hl(fee+'원')}이 발생합니다.\n\n아래 계좌로 입금해 주시면 빠르게 처리해 드리겠습니다.\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})\n\n입금 확인 후 신속하게 발송해 드리겠습니다. 감사합니다.`;
+}
+
+// 중국대행 - 해외배송 안내
+function buildCnIntl(plain){
+  const shop=gShop('cnIntl-shop'), product=gV('cnIntl-product')||'[상품명]';
+  const order=gV('cnIntl-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n해당 상품은 해외(중국) 직배송 상품으로,\n배송까지 영업일 기준 7~14일 소요됩니다.\n\n빠른 주문 처리를 위해 아래 내용을 확인해 주시기 바랍니다.\n✅ 수령 주소 및 연락처가 정확한지 확인해 주세요.\n\n배송 진행 시 추가 안내 문자를 보내드리겠습니다.\n문의사항은 언제든지 연락 주세요. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n해당 상품은 ${hl('해외(중국) 직배송')} 상품으로,\n배송까지 영업일 기준 ${hl('7~14일')} 소요됩니다.\n\n빠른 주문 처리를 위해 아래 내용을 확인해 주시기 바랍니다.\n✅ 수령 주소 및 연락처가 정확한지 확인해 주세요.\n\n배송 진행 시 추가 안내 문자를 보내드리겠습니다.\n문의사항은 언제든지 연락 주세요. 감사합니다.`;
+}
+
+// ══════════════════════════════════════════
+// RENDER / UPDATE
+// ══════════════════════════════════════════
+const builders = {
+  rs: buildRs, oos: buildOos, opt: buildOpt, dly: buildDly, zz: buildZz,
+  rrB: buildRrB, rrC1: buildRrC1, rrC2: buildRrC2,
+  exE1: buildExE1, exE1b: buildExE1b, exE2: buildExE2, exE3: buildExE3, exG: buildExG,
+  cnKdx: buildCnKdx, cnIntl: buildCnIntl,
+};
+
+function render(id){
+  const fn=builders[id]; if(!fn) return;
+  const prev=document.getElementById(id+'-preview');
+  const cnt=document.getElementById(id+'-count');
+  if(!prev) return;
+  const plain=fn(true), html=fn(false);
+  prev.innerHTML=html.replace(/\n/g,'<br>');
+  if(cnt) cnt.textContent=plain.length+'자';
+}
+
+function upd(id){ render(id); }
+
+function updStep(group, step){
+  const id=group+step.charAt(0).toUpperCase()+step.slice(1);
+  if(builders[id]) render(id);
+  else {
+    const id2 = group+(step.charAt(0).toUpperCase()+step.slice(1));
+    // try different casing
+    const key=group.replace(/[A-Z]/g,c=>c)+step;
+    if(builders[key]) render(key);
+  }
+}
+
+function refreshAll(){
+  Object.keys(builders).forEach(id=>{ try{render(id);}catch(e){} });
+  updateDayBanner();
+}
+
+function copy(id){
+  const fn=builders[id]; if(!fn) return;
+  const text=fn(true);
+  navigator.clipboard.writeText(text).then(()=>showToast('✓ 복사되었습니다')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast('✓ 복사되었습니다');
+  });
+}
+
+function copyStep(group, step){
+  const id=group+(step.charAt(0).toUpperCase()+step.slice(1));
+  copy(id);
+}
+
+function reset(id){
+  document.querySelectorAll(`[id^="${id}-"]`).forEach(el=>{
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.value='';
+    if(el.tagName==='INPUT'&&el.type==='checkbox') el.checked=false;
+  });
+  render(id);
+}
+function resetStep(id){
+  document.querySelectorAll(`[id^="${id}-"]`).forEach(el=>{
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.value='';
+    if(el.tagName==='INPUT'&&el.type==='checkbox') el.checked=false;
+  });
+  render(id);
+}
+
+// Day schedule
+const DAY=['일','월','화','수','목','금','토'];
+function getSchedule(){
+  const d=new Date().getDay();
+  if(d>=1&&d<=3) return '내일 또는 모레 중';
+  if(d===4) return '내일 또는 토요일, 늦어지면 월요일 중';
+  if(d===5) return '토요일 또는 월요일 중';
+  return null;
+}
+function updateDayBanner(){
+  const b=document.getElementById('day-banner-rs'); if(!b) return;
+  const d=new Date().getDay(), sched=getSchedule();
+  if(!sched){
+    b.innerHTML=`<span class="badge-day">${DAY[d]}요일</span> <strong>오늘은 수거 안내 발송일이 아닙니다 (토·일 제외)</strong>`;
+    const cb=document.getElementById('rs-copy-btn'); if(cb) cb.disabled=true;
+  } else {
+    b.innerHTML=`<span class="badge-day">${DAY[d]}요일</span> 수거 방문 예정: <strong>${sched}</strong>`;
+    const cb=document.getElementById('rs-copy-btn'); if(cb) cb.disabled=false;
+  }
+}
+
+function setDlyType(t){
+  dlyType=t;
+  document.getElementById('dly-폭주-input').style.display=t==='폭주'?'block':'none';
+  document.getElementById('dly-기타-input').style.display=t==='기타'?'block':'none';
+  document.querySelectorAll('[id^="dly-type-btn-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('dly-type-btn-'+t)?.classList.add('active');
+  render('dly');
+}
+
+// ══════════════════════════════════════════
+// COST CALCULATOR
+// ══════════════════════════════════════════
+const costItems = [
+  {id:'return-seller',label:'반품 (판매자 귀책)',type:'seller',costType:'round-trip',desc:'불량/오배송 등'},
+  {id:'return-buyer',label:'반품 (단순변심)',type:'buyer',costType:'round-trip',desc:'배송비 미수령 케이스'},
+  {id:'exchange-seller',label:'교환 (판매자 귀책)',type:'seller',costType:'round-trip',desc:'불량 교환'},
+  {id:'exchange-buyer',label:'교환 (고객 부담)',type:'buyer',costType:'round-trip',desc:'배송비 미입금 케이스'},
+  {id:'cancel-shipped',label:'취소 (이미 발송)',type:'seller',costType:'round-trip',desc:'반송비 발생'},
+  {id:'oos-cancel',label:'품절 취소',type:'seller',costType:'one-way',desc:'도매처 반품 편도'},
+  {id:'delay-cancel',label:'배송지연 취소',type:'seller',costType:'one-way',desc:'장기 지연 후 취소'},
+  {id:'china-kdx',label:'중국대행 경동택배비',type:'buyer',costType:'kdx',desc:'미입금 케이스'},
+];
+function buildCostGrid(){
+  const grid=document.getElementById('cost-grid');
+  grid.innerHTML=costItems.map(item=>`
+    <div class="cost-item">
+      <div class="cost-item-header">
+        <span class="cost-item-name">${item.label}</span>
+        <span class="cost-item-type ${item.type==='seller'?'type-seller':'type-buyer'}">${item.type==='seller'?'판매자부담':'고객부담*'}</span>
+      </div>
+      <input class="cost-count-input" id="cost-${item.id}" type="number" min="0" value="0" oninput="calcCost()">
+      <div class="cost-sub">${item.desc}</div>
+      <div class="cost-result" id="cost-${item.id}-result">0원</div>
+    </div>
+  `).join('');
+}
+function calcCost(){
+  const oneWay=parseInt(document.getElementById('cost-one-way')?.value)||3500;
+  const roundTrip=parseInt(document.getElementById('cost-round-trip')?.value)||7000;
+  const kdx=parseInt(document.getElementById('cost-kdx')?.value)||5000;
+  let total=0, totalCount=0;
+  costItems.forEach(item=>{
+    const cnt=parseInt(document.getElementById('cost-'+item.id)?.value)||0;
+    const rate=item.costType==='round-trip'?roundTrip:item.costType==='one-way'?oneWay:kdx;
+    const cost=cnt*rate;
+    total+=cost; totalCount+=cnt;
+    const r=document.getElementById('cost-'+item.id+'-result');
+    if(r) r.textContent=cost===0?'0원':`-${cost.toLocaleString()}원`;
+  });
+  const tt=document.getElementById('cost-total');
+  const tc=document.getElementById('cost-total-count');
+  if(tt) tt.textContent=`-${total.toLocaleString()}원`;
+  if(tc) tc.textContent=`${totalCount}건`;
+}
+function exportCost(){
+  const month=document.getElementById('cost-month')?.value||'월 미지정';
+  const oneWay=parseInt(document.getElementById('cost-one-way')?.value)||3500;
+  const roundTrip=parseInt(document.getElementById('cost-round-trip')?.value)||7000;
+  let lines=[`📊 ${month} 반품·교환 비용 정산\n`,'---'];
+  let total=0,totalCount=0;
+  costItems.forEach(item=>{
+    const cnt=parseInt(document.getElementById('cost-'+item.id)?.value)||0;
+    const rate=item.costType==='round-trip'?roundTrip:item.costType==='one-way'?oneWay:5000;
+    const cost=cnt*rate;
+    if(cnt>0){ lines.push(`${item.label}: ${cnt}건 × ${rate.toLocaleString()}원 = -${cost.toLocaleString()}원`); total+=cost; totalCount+=cnt; }
+  });
+  lines.push('---');
+  lines.push(`총 손실: -${total.toLocaleString()}원 (${totalCount}건)`);
+  const text=lines.join('\n');
+  navigator.clipboard.writeText(text).then(()=>showToast('✓ 클립보드에 복사! 노션에 붙여넣기 하세요')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast('✓ 복사완료!');
+  });
+}
+
+// ══════════════════════════════════════════
+// FU TRACKER
+// ══════════════════════════════════════════
+const RETURN_STAGES=['접수확인','문자발송','수거대기','수거완료','마켓처리완료','도매처반품','도매처환불완료'];
+const EXCHANGE_STAGES=['접수확인','사진/사유확인','배송비안내','입금확인','수거대기','수거완료','재발송완료'];
+
+let fuCases = JSON.parse(localStorage.getItem('fu-cases')||'[]');
+let fuFilter = 'all';
+
+function saveFu(){ localStorage.setItem('fu-cases', JSON.stringify(fuCases)); }
+
+function openFuModal(){
+  document.getElementById('fu-modal').classList.add('active');
+  // set today + 3 days as default deadline
+  const d=new Date(); d.setDate(d.getDate()+3);
+  document.getElementById('fu-deadline').value=d.toISOString().split('T')[0];
+}
+function closeFuModal(){ document.getElementById('fu-modal').classList.remove('active'); }
+
+function addFuCase(){
+  const type=document.getElementById('fu-type').value;
+  const market=document.getElementById('fu-market').value;
+  const product=document.getElementById('fu-product').value.trim();
+  const order=document.getElementById('fu-order').value.trim();
+  const deadline=document.getElementById('fu-deadline').value;
+  const note=document.getElementById('fu-note').value.trim();
+  if(!product){ showToast('상품명을 입력해주세요'); return; }
+  fuCases.unshift({
+    id: Date.now(), type, market, product, order, deadline, note,
+    stage: 0,
+    stages: type==='return'?RETURN_STAGES:EXCHANGE_STAGES,
+    created: new Date().toISOString().split('T')[0]
+  });
+  saveFu(); renderFu(); closeFuModal();
+  ['fu-product','fu-order','fu-note'].forEach(id=>document.getElementById(id).value='');
+  showToast('✓ 케이스가 추가되었습니다');
+}
+
+function advanceStage(id){
+  const c=fuCases.find(c=>c.id===id); if(!c) return;
+  if(c.stage<c.stages.length-1){ c.stage++; saveFu(); renderFu(); showToast('✓ 단계 업데이트'); }
+}
+function deleteFuCase(id){
+  fuCases=fuCases.filter(c=>c.id!==id); saveFu(); renderFu();
+}
+
+function filterFu(f, el){
+  fuFilter=f;
+  document.querySelectorAll('.fu-filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderFu();
+}
+
+function getDaysLeft(deadline){
+  if(!deadline) return null;
+  const d=new Date(deadline), today=new Date();
+  today.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  return Math.floor((d-today)/(1000*60*60*24));
+}
+
+function renderFu(){
+  const list=document.getElementById('fu-list'); if(!list) return;
+  let filtered=fuCases;
+  if(fuFilter==='return') filtered=fuCases.filter(c=>c.type==='return');
+  else if(fuFilter==='exchange') filtered=fuCases.filter(c=>c.type==='exchange');
+  else if(fuFilter==='urgent') filtered=fuCases.filter(c=>{const dl=getDaysLeft(c.deadline);return dl!==null&&dl<=2&&c.stage<c.stages.length-1;});
+  else if(fuFilter==='done') filtered=fuCases.filter(c=>c.stage===c.stages.length-1);
+
+  if(filtered.length===0){
+    list.innerHTML=`<div class="fu-empty">케이스가 없습니다<br><span style="font-size:12px;margin-top:4px;display:block">"+ 케이스 추가" 버튼으로 추가하세요</span></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map(c=>{
+    const days=getDaysLeft(c.deadline);
+    const isDone=c.stage===c.stages.length-1;
+    const isUrgent=!isDone&&days!==null&&days<=1;
+    const isWarning=!isDone&&days!==null&&days<=3&&days>1;
+    let badgeClass='deadline-ok', badgeText=days===null?'기한없음':days===0?'D-DAY':days<0?`D+${Math.abs(days)}`:`D-${days}`;
+    if(isDone){badgeClass='deadline-done';badgeText='✓ 완료';}
+    else if(isUrgent) badgeClass='deadline-urgent';
+    else if(isWarning) badgeClass='deadline-warning';
+    const stages=c.stages.map((s,i)=>`<span class="fu-stage ${i<c.stage?'done':i===c.stage?'current':''}" onclick="setStage(${c.id},${i})">${i<c.stage?'✓ ':i===c.stage?'▶ ':''}${s}</span>`).join('');
+    return `<div class="fu-card ${isUrgent?'urgent':isWarning?'warning':''}">
+      <div class="fu-card-top">
+        <div class="fu-card-info">
+          <div class="fu-card-market">${c.type==='return'?'↩️ 반품':'🔄 교환'} · ${c.market}</div>
+          <div class="fu-card-product">${c.product}</div>
+          ${c.order?`<div class="fu-card-order">${c.order}</div>`:''}
+          ${c.note?`<div style="font-size:12px;color:var(--text-dim);margin-top:3px">📝 ${c.note}</div>`:''}
+        </div>
+        <span class="fu-deadline-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="fu-stages">${stages}</div>
+      <div class="fu-card-actions">
+        ${!isDone?`<button class="fu-btn fu-btn-adv" onclick="advanceStage(${c.id})">→ 다음 단계</button>`:''}
+        <button class="fu-btn fu-btn-del" onclick="deleteFuCase(${c.id})">삭제</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setStage(id,stage){
+  const c=fuCases.find(c=>c.id===id); if(!c) return;
+  c.stage=stage; saveFu(); renderFu();
+}
+
+// ══════════════════════════════════════════
+// WORKFLOW BAR
+// ══════════════════════════════════════════
+function toggleWf(el){ el.classList.toggle('done'); }
+function setDate(){
+  const d=new Date();
+  const days=['일','월','화','수','목','금','토'];
+  const str=`${d.getMonth()+1}/${d.getDate()}(${days[d.getDay()]})`;
+  document.getElementById('wf-date').textContent=str;
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast'); if(!t) return;
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  loadSettings();
+  buildCostGrid();
+  // set default month
+  const now=new Date();
+  const m=document.getElementById('cost-month');
+  if(m) m.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  calcCost();
+  setDate();
+  updateDayBanner();
+  refreshAll();
+  renderFu();
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeFuModal(); });
+});
+</script>
+</body>
+</html>
