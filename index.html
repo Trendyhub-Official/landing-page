@@ -8,16 +8,15 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0e0e10;--surface:#18181c;--surface2:#222228;--surface3:#2a2a32;
-  --border:#2e2e38;--border2:#3a3a48;
-  --accent:#ff5c35;--accent2:#ffb800;--accent3:#4ade80;--accent4:#60a5fa;
-  --text:#f0f0f5;--text-dim:#7a7a90;--text-mid:#b0b0c8;
-  --red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--green:#4ade80;
-  --r:10px;--r-sm:7px;
+--bg:#0e0e10;--surface:#18181c;--surface2:#222228;--surface3:#2a2a32;
+--border:#2e2e38;--border2:#3a3a48;
+--accent:#ff5c35;--accent2:#ffb800;--accent3:#4ade80;--accent4:#60a5fa;
+--text:#f0f0f5;--text-dim:#7a7a90;--text-mid:#b0b0c8;
+--red:#f87171;--orange:#fb923c;--yellow:#fbbf24;--green:#4ade80;
+--r:10px;--r-sm:7px;
 }
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
-
 /* ─── WORKFLOW BAR ─── */
 .wf-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;position:sticky;top:0;z-index:100;overflow-x:auto}
 .wf-inner{display:flex;align-items:center;gap:12px;min-width:max-content}
@@ -27,21 +26,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .wf-step.done{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.3);color:var(--green)}
 .wf-arrow{color:var(--border2);font-size:14px}
 .wf-date{margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:var(--text-dim);white-space:nowrap}
-
 /* ─── MAIN NAV ─── */
 .main-nav{display:flex;gap:4px;padding:16px 20px 0;position:relative;z-index:1;border-bottom:1px solid var(--border)}
 .main-nav-btn{background:transparent;border:none;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:500;padding:8px 16px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;transition:all .15s;white-space:nowrap}
 .main-nav-btn:hover{color:var(--text);background:var(--surface)}
 .main-nav-btn.active{color:var(--text);background:var(--surface);border:1px solid var(--border);border-bottom:1px solid var(--surface)}
-
 /* ─── SECTIONS ─── */
 .main-sec{display:none;padding:20px;position:relative;z-index:1;max-width:760px;margin:0 auto}
 .main-sec.active{display:block}
-
 /* ─── CARDS ─── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:12px}
 .card-title{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px}
-
 /* ─── BANK SETTINGS ─── */
 .bank-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;margin-bottom:16px}
 .bank-bar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
@@ -56,25 +51,21 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .settings-row .field{margin:0}
 .save-btn{background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;padding:6px 14px;border-radius:6px;cursor:pointer;transition:background .15s;white-space:nowrap}
 .save-btn:hover{background:#ff3d18}
-
 /* ─── SMS SUB-NAV ─── */
 .sms-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .sms-nav-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;padding:6px 14px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .sms-nav-btn:hover{border-color:var(--text-mid);color:var(--text)}
 .sms-nav-btn.active{background:rgba(255,92,53,.1);border-color:var(--accent);color:var(--accent);font-weight:700}
-
 /* ─── SMS TEMPLATE SECTIONS ─── */
 .sms-sec{display:none}
 .sms-sec.active{display:block}
-
-/* ─── STEP FLOW (for multi-step templates) ─── */
+/* ─── STEP FLOW ─── */
 .step-flow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .step-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
 .step-btn:hover{border-color:var(--text-mid);color:var(--text)}
 .step-btn.active{background:rgba(96,165,250,.1);border-color:var(--accent4);color:var(--accent4);font-weight:600}
 .step-num{font-family:'Space Mono',monospace;font-size:10px;background:var(--border);border-radius:3px;padding:1px 5px}
 .step-btn.active .step-num{background:rgba(96,165,250,.2);color:var(--accent4)}
-
 /* ─── FIELDS ─── */
 .field{margin-bottom:12px}
 .field label{display:block;font-size:11px;font-weight:600;color:var(--text-dim);margin-bottom:5px;letter-spacing:.03em}
@@ -87,7 +78,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .field-row .field{margin:0}
 .field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .field-row-3 .field{margin:0}
-
 /* ─── TOGGLE ─── */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;margin-bottom:12px}
 .toggle-label-text{font-size:13px;color:var(--text-mid)}
@@ -97,7 +87,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .toggle-slider:before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:#888;border-radius:50%;transition:.2s}
 .toggle input:checked+.toggle-slider{background:rgba(255,92,53,.4)}
 .toggle input:checked+.toggle-slider:before{transform:translateX(17px);background:var(--accent)}
-
 /* ─── PREVIEW ─── */
 .preview-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;font-size:13px;line-height:1.9;color:var(--text);white-space:pre-wrap;word-break:break-all;min-height:160px}
 .hl{background:rgba(255,92,53,.12);color:#ffb088;border-radius:3px;padding:0 3px;font-weight:500}
@@ -111,7 +100,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .btn-reset{background:transparent;color:var(--text-dim)}
 .btn-reset:hover{background:var(--surface2);color:var(--text)}
 .btn-copy:disabled{background:#444;border-color:#444;cursor:not-allowed;opacity:.5}
-
 /* ─── COST CALCULATOR ─── */
 .month-selector{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .month-selector input{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:7px 12px;outline:none}
@@ -135,7 +123,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .total-amount{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--red)}
 .export-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;margin-top:10px}
 .export-btn:hover{border-color:var(--accent4);color:var(--accent4)}
-
 /* ─── FU TRACKER ─── */
 .fu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .fu-add-btn{background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:var(--r-sm);cursor:pointer;transition:background .15s}
@@ -174,7 +161,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .fu-empty{text-align:center;padding:40px;color:var(--text-dim);font-size:14px}
 .fu-notes{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:7px 10px;outline:none;resize:none;margin-top:6px}
 .fu-notes:focus{border-color:var(--accent)}
-
 /* ─── FU ADD MODAL ─── */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 .modal-overlay.active{display:flex}
@@ -184,7 +170,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .modal-actions{display:flex;gap:8px;margin-top:16px}
 .modal-submit{flex:1;background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:var(--r-sm);cursor:pointer}
 .modal-cancel-btn{flex:1;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:'Noto Sans KR',sans-serif;font-size:14px;padding:11px;border-radius:var(--r-sm);cursor:pointer}
-
 /* ─── MANUAL ─── */
 .manual-section{margin-bottom:24px}
 .manual-section h2{font-size:16px;font-weight:700;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
@@ -195,11 +180,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .code-block{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-sm);padding:12px;font-family:'Space Mono',monospace;font-size:12px;color:var(--accent2);margin:8px 0;overflow-x:auto}
 .tip-box{background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.2);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--accent4);line-height:1.6}
 .warning-box{background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--red);line-height:1.6;margin-bottom:10px}
-
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);font-size:13px;font-weight:600;padding:9px 20px;border-radius:999px;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap;z-index:300}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
 /* ─── MISC ─── */
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.05em}
 .badge-zigzag{background:rgba(255,75,119,.1);color:#ff4b77;border:1px solid rgba(255,75,119,.3)}
@@ -208,14 +191,16 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .badge-day{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600}
 .day-banner{display:flex;align-items:center;gap:8px;background:rgba(255,92,53,.06);border:1px solid rgba(255,92,53,.15);border-radius:var(--r-sm);padding:9px 12px;margin-bottom:12px;font-size:13px;color:var(--text-mid)}
 .day-banner strong{color:var(--accent)}
+.day-banner-weekend{background:rgba(255,184,0,.06);border-color:rgba(255,184,0,.2)}
+.day-banner-weekend strong{color:var(--accent2)}
 .section-hdr{display:flex;align-items:center;gap:12px;margin:20px 0 12px}
 .section-hdr h2{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap}
 .section-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
 @media(max-width:600px){
-  .cost-grid{grid-template-columns:1fr}
-  .shipping-row,.settings-row,.field-row,.field-row-3{grid-template-columns:1fr}
-  .main-nav{overflow-x:auto;flex-wrap:nowrap}
-  .main-nav-btn{font-size:12px;padding:6px 12px}
+.cost-grid{grid-template-columns:1fr}
+.shipping-row,.settings-row,.field-row,.field-row-3{grid-template-columns:1fr}
+.main-nav{overflow-x:auto;flex-wrap:nowrap}
+.main-nav-btn{font-size:12px;padding:6px 12px}
 }
 </style>
 </head>
@@ -322,9 +307,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-flow">
       <button class="step-btn active" onclick="switchStep('rr','B',this)"><span class="step-num">1</span>사진 요청</button>
       <button class="step-btn" onclick="switchStep('rr','C1',this)"><span class="step-num">2</span>판매자귀책 수거안내</button>
-      <button class="step-btn" onclick="switchStep('rr','C2',this)"><span class="step-num">3</span>구매자귀책 사유변경요청</button>
+      <button class="step-btn" onclick="switchStep('rr','C2',this)"><span class="step-num">3</span>구매자귀책 반품비안내</button>
     </div>
-    <!-- B -->
+
+    <!-- B: 사진 요청 -->
     <div class="step-sec active" id="rr-B">
       <div class="card">
         <div class="card-title">반품 사유 확인 · 사진 요청</div>
@@ -335,7 +321,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrB-preview"></div><div class="char-count" id="rrB-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrB')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','B')">문자 복사</button></div></div>
     </div>
-    <!-- C1 -->
+
+    <!-- C1: 판매자귀책 수거안내 -->
     <div class="step-sec" id="rr-C1">
       <div class="card">
         <div class="card-title">반품 사유 확인 · 판매자 귀책 → 수거 안내</div>
@@ -345,14 +332,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrC1-preview"></div><div class="char-count" id="rrC1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrC1')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','C1')">문자 복사</button></div></div>
     </div>
-    <!-- C2 -->
+
+    <!-- C2: 구매자귀책 반품비 안내 -->
     <div class="step-sec" id="rr-C2">
       <div class="card">
-        <div class="card-title">반품 사유 확인 · 구매자 귀책 → 단순변심 사유 변경 요청</div>
+        <div class="card-title">반품 사유 확인 · 구매자 귀책 → 반품비 안내</div>
         <div class="field"><label>쇼핑몰명</label><input id="rrC2-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','C2')"></div>
         <div class="field"><label>상품명 *</label><input id="rrC2-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','C2')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="rrC2-order" type="text" oninput="updStep('rr','C2')"></div>
-        <div class="field"><label>상세페이지 근거 내용 *</label><input id="rrC2-reason" type="text" placeholder="예) 사이즈가 기재되어 있으므로" oninput="updStep('rr','C2')"></div>
+        <div style="background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);border-radius:var(--r-sm);padding:9px 12px;font-size:12px;color:var(--text-mid);margin-bottom:12px">
+          💡 계좌 정보는 상단 <strong>전역 계좌 설정</strong>에서 자동으로 불러옵니다
+        </div>
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrC2-preview"></div><div class="char-count" id="rrC2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrC2')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','C2')">문자 복사</button></div></div>
     </div>
@@ -367,6 +357,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="step-btn" onclick="switchStep('ex','E3',this)"><span class="step-num">4</span>수거안내</button>
       <button class="step-btn" onclick="switchStep('ex','G',this)"><span class="step-num">5</span>재발송완료</button>
     </div>
+
     <!-- E1 -->
     <div class="step-sec active" id="ex-E1">
       <div class="card">
@@ -382,6 +373,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE1-preview"></div><div class="char-count" id="exE1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE1')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E1')">문자 복사</button></div></div>
     </div>
+
     <!-- E1b -->
     <div class="step-sec" id="ex-E1b">
       <div class="card">
@@ -392,6 +384,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE1b-preview"></div><div class="char-count" id="exE1b-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE1b')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E1b')">문자 복사</button></div></div>
     </div>
+
     <!-- E2 -->
     <div class="step-sec" id="ex-E2">
       <div class="card">
@@ -403,6 +396,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE2-preview"></div><div class="char-count" id="exE2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE2')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E2')">문자 복사</button></div></div>
     </div>
+
     <!-- E3 -->
     <div class="step-sec" id="ex-E3">
       <div class="card">
@@ -413,6 +407,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="exE3-preview"></div><div class="char-count" id="exE3-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('exE3')">초기화</button><button class="btn btn-copy" onclick="copyStep('ex','E3')">문자 복사</button></div></div>
     </div>
+
     <!-- G -->
     <div class="step-sec" id="ex-G">
       <div class="card">
@@ -496,7 +491,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="step-btn active" onclick="switchStep('cn','kdx',this)"><span class="step-num">A</span>경동택배비 안내</button>
       <button class="step-btn" onclick="switchStep('cn','intl',this)"><span class="step-num">B</span>해외배송 소요 안내</button>
     </div>
-    <!-- 경동택배비 -->
+
     <div class="step-sec active" id="cn-kdx">
       <div class="card">
         <div class="card-title">경동택배비 발생 · 입금 안내 <span class="badge badge-china">중국대행</span></div>
@@ -509,7 +504,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="cnKdx-preview"></div><div class="char-count" id="cnKdx-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('cnKdx')">초기화</button><button class="btn btn-copy" onclick="copyStep('cn','kdx')">문자 복사</button></div></div>
     </div>
-    <!-- 해외배송 안내 -->
+
     <div class="step-sec" id="cn-intl">
       <div class="card">
         <div class="card-title">해외배송 소요 안내 <span class="badge badge-china">중국대행</span></div>
@@ -527,12 +522,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <!-- ══════════ 비용계산 TAB ══════════ -->
 <div class="main-sec" id="sec-cost">
   <div class="section-hdr"><h2>월별 비용 계산기</h2></div>
-
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
     <div class="month-selector"><input type="month" id="cost-month"></div>
     <button class="export-btn" onclick="exportCost()">📋 노션/메모에 붙여넣기용 내보내기</button>
   </div>
-
   <div class="shipping-settings">
     <div class="shipping-settings-title">배송비 단가 설정</div>
     <div class="shipping-row">
@@ -541,11 +534,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="field"><label>경동택배 기본 (원)</label><input id="cost-kdx" type="number" value="5000" oninput="calcCost()"></div>
     </div>
   </div>
-
-  <div class="cost-grid" id="cost-grid">
-    <!-- JS로 생성 -->
-  </div>
-
+  <div class="cost-grid" id="cost-grid"></div>
   <div class="card" style="background:rgba(248,113,113,.05);border-color:rgba(248,113,113,.2)">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
       <div>
@@ -584,24 +573,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <!-- ══════════ MANUAL TAB ══════════ -->
 <div class="main-sec" id="sec-manual">
   <div class="section-hdr"><h2>클로드에게 효율적으로 업데이트 요청하는 법</h2></div>
-
   <div class="warning-box">⚠️ 클로드는 Netlify URL에 직접 접근하여 업데이트할 수 없어요. 항상 <strong>새 HTML 파일을 받아서 재업로드</strong>하는 방식으로 진행해요.</div>
-
   <div class="manual-section">
     <h2>📋 Netlify 업데이트 워크플로우</h2>
     <div class="manual-step"><div class="manual-step-num">STEP 01</div><div class="manual-step-title">클로드에게 요청</div><div class="manual-step-desc">claude.ai 채팅에서 이 HTML 파일을 첨부하고 원하는 내용을 설명하세요. 파일 첨부가 핵심이에요 — 파일 없이 텍스트만 보내면 클로드가 기존 내용을 모릅니다.</div></div>
     <div class="manual-step"><div class="manual-step-num">STEP 02</div><div class="manual-step-title">새 index.html 다운로드</div><div class="manual-step-desc">클로드가 업데이트된 index.html을 드립니다. 다운로드하세요.</div></div>
     <div class="manual-step"><div class="manual-step-num">STEP 03</div><div class="manual-step-title">Netlify에 재업로드</div><div class="manual-step-desc">Netlify 대시보드 → Production deploys → 새 파일 드래그앤드롭. 30초 내 자동 배포됩니다.</div></div>
   </div>
-
   <div class="manual-section">
     <h2>✍️ 요청 템플릿 (복사해서 사용)</h2>
     <div class="code-block">이 HTML 파일에 [추가/수정/삭제] 해줘:
-
 추가: [내용 설명]
 수정: [기존 내용] → [바꿀 내용]
 삭제: [제거할 항목]
-
 요청사항 예시:
 - "중국대행 탭에 반품불가 안내 문자 추가해줘"
 - "교환 탭에 6단계 '도매처 교환접수 완료' 스텝 추가"
@@ -609,14 +593,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 - "FU 탭 반품 단계에 '마켓 승인 기한 D-3 알림' 추가"</div>
     <div class="tip-box">💡 팁: 요청이 구체적일수록 정확하게 반영돼요. "이런 느낌으로" 보다 "A 위치에 B를 추가"가 훨씬 효과적입니다. 그리고 항상 최신 HTML 파일을 첨부해야 기존 내용이 유지돼요.</div>
   </div>
-
   <div class="manual-section">
     <h2>📁 파일 관리 팁</h2>
     <div class="manual-step"><div class="manual-step-num">TIP 01</div><div class="manual-step-title">파일 버전 관리</div><div class="manual-step-desc">업데이트 받을 때마다 이전 파일을 "index_20250115.html" 형식으로 날짜 붙여 보관해두면 롤백 가능해요.</div></div>
     <div class="manual-step"><div class="manual-step-num">TIP 02</div><div class="manual-step-title">로컬 + 넷리파이 병행</div><div class="manual-step-desc">PC에서도 더블클릭으로 열 수 있어요. 인터넷 없어도 됨. 폰에서 쓸 때는 Netlify URL 북마크 사용.</div></div>
     <div class="manual-step"><div class="manual-step-num">TIP 03</div><div class="manual-step-title">데이터 주의사항</div><div class="manual-step-desc">FU 케이스, 비용 데이터는 브라우저 localStorage에 저장돼요. 브라우저 데이터를 지우면 초기화됩니다. 중요한 데이터는 "내보내기"로 백업해두세요.</div></div>
   </div>
-
   <div class="manual-section">
     <h2>🔗 자주 쓰는 링크 모음</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -668,8 +650,9 @@ function gV(id){ const e=document.getElementById(id); return e?e.value.trim():''
 function hl(t){ return `<span class="hl">${t}</span>`; }
 function gAccount(){ return gV('g-account')||G.account||'[계좌번호]'; }
 function gHolder(){ return gV('g-holder')||G.holder||'[예금주명]'; }
-function gBank(){ return document.getElementById('bank-btns')?G.bank:'카카오뱅크'; }
+function gBank(){ return G.bank||'카카오뱅크'; }
 function gShop(id){ return gV(id)||G.shop||'[쇼핑몰명]'; }
+
 const safeLine = '\n\n※ 본 문자는 안심번호로 발송되어 회신 시 확인이 어렵습니다.\n성함과 함께 본 문자에 답변해 주시면 확인 가능합니다.';
 
 function selectBank(name, el){
@@ -680,7 +663,6 @@ function selectBank(name, el){
 }
 function gUpdate(){ refreshAll(); }
 function saveSettings(){
-  G.bank=G.bank;
   G.account=gV('g-account'); G.holder=gV('g-holder'); G.shop=gV('g-shop');
   localStorage.setItem('g-bank',G.bank);
   localStorage.setItem('g-account',G.account);
@@ -717,9 +699,7 @@ function switchSms(id, el){
   refreshAll();
 }
 function switchStep(group, step, el){
-  const sec = document.getElementById('sms-'+group)||document.getElementById('sec-sms');
-  // deactivate all steps in this group
-  el.closest('.sms-sec,#sec-sms').querySelectorAll('.step-btn').forEach(b=>b.classList.remove('active'));
+  el.closest('.sms-sec').querySelectorAll('.step-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   el.closest('.sms-sec').querySelectorAll('.step-sec').forEach(s=>s.classList.remove('active'));
   document.getElementById(group+'-'+step).classList.add('active');
@@ -730,15 +710,13 @@ function switchStep(group, step, el){
 // MESSAGE BUILDERS
 // ══════════════════════════════════════════
 
-// rs - 반품 단순변심
+// rs - 반품 단순변심 (주말에도 작성 가능)
 function buildRs(plain){
   const shop=gShop('rs-shop'), product=gV('rs-product')||'[상품명]';
   const order=gV('rs-order'), oStr=order?`(주문번호: ${order}) `:'';
   const schedule=getSchedule();
-  if(!schedule) return plain?'오늘(토·일)은 수거 안내 발송일이 아닙니다.':
-    '<span style="color:var(--text-dim)">오늘(토·일)은 수거 안내 발송일이 아닙니다.</span>';
-  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${schedule} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
-  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${hl(schedule)} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${schedule} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 기사님께서 ${hl(schedule)} 방문 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n\n쇼핑에 불편을 드려 죄송하며, 문의사항은 언제든지 연락 주세요. 감사합니다.`;
 }
 
 // rrB - 반품 사유확인 사진요청
@@ -749,20 +727,22 @@ function buildRrB(plain){
   if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 절차상 불편하셨던 부분과 관련하여, 정확한 확인을 위해 사진 한 장 부탁드려도 될까요?\n\n확인 후 신속하게 처리해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
   return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 절차상 불편하셨던 부분과 관련하여, 정확한 확인을 위해 사진 한 장 부탁드려도 될까요?\n\n확인 후 신속하게 처리해 드리겠습니다.${safe?safeLine:''}\n\n감사합니다.`;
 }
-// rrC1 - 판매자귀책 수거
+
+// rrC1 - 판매자귀책: 사진 확인 후 수거 안내 ★수정됨
 function buildRrC1(plain){
   const shop=gShop('rrC1-shop'), product=gV('rrC1-product')||'[상품명]';
   const order=gV('rrC1-order'), oStr=order?`(주문번호: ${order}) `:'';
-  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n불편을 드린 점 진심으로 사과드립니다.\n\n반품 접수 후 3일 이내 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다. 감사합니다.`;
-  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n불편을 드린 점 진심으로 사과드립니다.\n\n${hl('반품 접수 후 3일 이내')} 수거 예정이오니,\n수거 전 제품 포장 부탁드립니다.\n\n수거 완료 후 마켓을 통해 환불 처리됩니다. 감사합니다.`;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n전달해 주신 사진 잘 확인하였습니다.\n불편을 드려 진심으로 사과드립니다.\n\n제품은 기사님께서 회수하실 수 있도록 포장 부탁드리며,\n반품 접수 후 3일 이내 방문 예정입니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n전달해 주신 사진 잘 확인하였습니다.\n불편을 드려 진심으로 사과드립니다.\n\n제품은 기사님께서 회수하실 수 있도록 포장 부탁드리며,\n${hl('반품 접수 후 3일 이내')} 방문 예정입니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n감사합니다.`;
 }
-// rrC2 - 구매자귀책
+
+// rrC2 - 구매자귀책: 반품비 7000원 + 계좌 안내 ★수정됨
 function buildRrC2(plain){
   const shop=gShop('rrC2-shop'), product=gV('rrC2-product')||'[상품명]';
   const order=gV('rrC2-order'), oStr=order?`(주문번호: ${order}) `:'';
-  const reason=gV('rrC2-reason')||'[상세페이지 근거]';
-  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n확인 결과, ${reason} 해당 내용은 상세페이지에 이미 기재된 내용으로 단순변심에 해당됩니다.\n\n반품 진행을 위해 마켓에서 반품 사유를 단순변심으로 변경 후 절차 진행이 가능하오니, 변경 부탁드립니다.\n\n감사합니다.`;
-  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n확인 결과, ${hl(reason)} 해당 내용은 상세페이지에 이미 기재된 내용으로 단순변심에 해당됩니다.\n\n반품 진행을 위해 마켓에서 반품 사유를 ${hl('단순변심')}으로 변경 후 절차 진행이 가능하오니, 변경 부탁드립니다.\n\n감사합니다.`;
+  const bank=gBank(), acc=gAccount(), holder=gHolder();
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 신청 확인하였으나, 전달해 주신 사항은\n구매자 귀책에 해당됩니다.\n\n이에 따라 단순변심 반품에 해당되어\n반품 비용 7,000원이 발생됩니다.\n\n입금 후 반품 절차가 진행되며,\n반품 진행하시는 경우 하기 계좌로 입금 바랍니다.\n\n🏦 ${bank} ${acc}\n예금주: ${holder}\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 신청 확인하였으나, 전달해 주신 사항은\n구매자 귀책에 해당됩니다.\n\n이에 따라 단순변심 반품에 해당되어\n반품 비용 ${hl('7,000원')}이 발생됩니다.\n\n입금 후 반품 절차가 진행되며,\n반품 진행하시는 경우 하기 계좌로 입금 바랍니다.\n\n🏦 ${hl(bank)} ${hl(acc)}\n예금주: ${hl(holder)}\n\n감사합니다.`;
 }
 
 // 교환 builders
@@ -883,25 +863,15 @@ function render(id){
   prev.innerHTML=html.replace(/\n/g,'<br>');
   if(cnt) cnt.textContent=plain.length+'자';
 }
-
 function upd(id){ render(id); }
-
 function updStep(group, step){
-  const id=group+step.charAt(0).toUpperCase()+step.slice(1);
+  const id=group+(step.charAt(0).toUpperCase()+step.slice(1));
   if(builders[id]) render(id);
-  else {
-    const id2 = group+(step.charAt(0).toUpperCase()+step.slice(1));
-    // try different casing
-    const key=group.replace(/[A-Z]/g,c=>c)+step;
-    if(builders[key]) render(key);
-  }
 }
-
 function refreshAll(){
   Object.keys(builders).forEach(id=>{ try{render(id);}catch(e){} });
   updateDayBanner();
 }
-
 function copy(id){
   const fn=builders[id]; if(!fn) return;
   const text=fn(true);
@@ -911,12 +881,10 @@ function copy(id){
     showToast('✓ 복사되었습니다');
   });
 }
-
 function copyStep(group, step){
   const id=group+(step.charAt(0).toUpperCase()+step.slice(1));
   copy(id);
 }
-
 function reset(id){
   document.querySelectorAll(`[id^="${id}-"]`).forEach(el=>{
     if(el.tagName==='INPUT'||el.tagName==='TEXTAREA') el.value='';
@@ -932,24 +900,30 @@ function resetStep(id){
   render(id);
 }
 
-// Day schedule
+// Day schedule - 주말에도 작성 가능 ★수정됨
 const DAY=['일','월','화','수','목','금','토'];
 function getSchedule(){
   const d=new Date().getDay();
   if(d>=1&&d<=3) return '내일 또는 모레 중';
   if(d===4) return '내일 또는 토요일, 늦어지면 월요일 중';
   if(d===5) return '토요일 또는 월요일 중';
-  return null;
+  return '반품 접수 후 3일 이내'; // 토·일: 발송 예정일 placeholder
 }
+
 function updateDayBanner(){
   const b=document.getElementById('day-banner-rs'); if(!b) return;
-  const d=new Date().getDay(), sched=getSchedule();
-  if(!sched){
-    b.innerHTML=`<span class="badge-day">${DAY[d]}요일</span> <strong>오늘은 수거 안내 발송일이 아닙니다 (토·일 제외)</strong>`;
-    const cb=document.getElementById('rs-copy-btn'); if(cb) cb.disabled=true;
+  const d=new Date().getDay();
+  const isWeekend=(d===0||d===6);
+  const sched=getSchedule();
+  const cb=document.getElementById('rs-copy-btn');
+  if(isWeekend){
+    b.className='day-banner day-banner-weekend';
+    b.innerHTML=`<span class="badge-day">${DAY[d]}요일</span> 주말이지만 문자 <strong>미리 작성·복사 가능</strong>합니다 (발송은 월요일 이후 권장)`;
+    if(cb) cb.disabled=false;
   } else {
+    b.className='day-banner';
     b.innerHTML=`<span class="badge-day">${DAY[d]}요일</span> 수거 방문 예정: <strong>${sched}</strong>`;
-    const cb=document.getElementById('rs-copy-btn'); if(cb) cb.disabled=false;
+    if(cb) cb.disabled=false;
   }
 }
 
@@ -975,6 +949,7 @@ const costItems = [
   {id:'delay-cancel',label:'배송지연 취소',type:'seller',costType:'one-way',desc:'장기 지연 후 취소'},
   {id:'china-kdx',label:'중국대행 경동택배비',type:'buyer',costType:'kdx',desc:'미입금 케이스'},
 ];
+
 function buildCostGrid(){
   const grid=document.getElementById('cost-grid');
   grid.innerHTML=costItems.map(item=>`
@@ -989,6 +964,7 @@ function buildCostGrid(){
     </div>
   `).join('');
 }
+
 function calcCost(){
   const oneWay=parseInt(document.getElementById('cost-one-way')?.value)||3500;
   const roundTrip=parseInt(document.getElementById('cost-round-trip')?.value)||7000;
@@ -999,80 +975,89 @@ function calcCost(){
     const rate=item.costType==='round-trip'?roundTrip:item.costType==='one-way'?oneWay:kdx;
     const cost=cnt*rate;
     total+=cost; totalCount+=cnt;
-    const r=document.getElementById('cost-'+item.id+'-result');
-    if(r) r.textContent=cost===0?'0원':`-${cost.toLocaleString()}원`;
+    const el=document.getElementById('cost-'+item.id+'-result');
+    if(el) el.textContent=cost>0?cost.toLocaleString()+'원':'0원';
   });
-  const tt=document.getElementById('cost-total');
-  const tc=document.getElementById('cost-total-count');
-  if(tt) tt.textContent=`-${total.toLocaleString()}원`;
-  if(tc) tc.textContent=`${totalCount}건`;
+  const tel=document.getElementById('cost-total');
+  const cel=document.getElementById('cost-total-count');
+  if(tel) tel.textContent=total>0?total.toLocaleString()+'원':'0원';
+  if(cel) cel.textContent=totalCount+'건';
 }
+
 function exportCost(){
-  const month=document.getElementById('cost-month')?.value||'월 미지정';
+  const month=document.getElementById('cost-month')?.value||'미설정';
   const oneWay=parseInt(document.getElementById('cost-one-way')?.value)||3500;
   const roundTrip=parseInt(document.getElementById('cost-round-trip')?.value)||7000;
-  let lines=[`📊 ${month} 반품·교환 비용 정산\n`,'---'];
-  let total=0,totalCount=0;
+  let lines=[`📊 ${month} 비용 정산`,`${'─'.repeat(30)}`];
+  let total=0;
   costItems.forEach(item=>{
     const cnt=parseInt(document.getElementById('cost-'+item.id)?.value)||0;
-    const rate=item.costType==='round-trip'?roundTrip:item.costType==='one-way'?oneWay:5000;
-    const cost=cnt*rate;
-    if(cnt>0){ lines.push(`${item.label}: ${cnt}건 × ${rate.toLocaleString()}원 = -${cost.toLocaleString()}원`); total+=cost; totalCount+=cnt; }
+    if(cnt>0){
+      const rate=item.costType==='round-trip'?roundTrip:item.costType==='one-way'?oneWay:parseInt(document.getElementById('cost-kdx')?.value)||5000;
+      const cost=cnt*rate;
+      total+=cost;
+      lines.push(`${item.label}: ${cnt}건 × ${rate.toLocaleString()}원 = ${cost.toLocaleString()}원`);
+    }
   });
-  lines.push('---');
-  lines.push(`총 손실: -${total.toLocaleString()}원 (${totalCount}건)`);
+  lines.push(`${'─'.repeat(30)}`);
+  lines.push(`총 손실: ${total.toLocaleString()}원`);
   const text=lines.join('\n');
-  navigator.clipboard.writeText(text).then(()=>showToast('✓ 클립보드에 복사! 노션에 붙여넣기 하세요')).catch(()=>{
+  navigator.clipboard.writeText(text).then(()=>showToast('✓ 클립보드에 복사됐어요')).catch(()=>{
     const ta=document.createElement('textarea');ta.value=text;
     document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
-    showToast('✓ 복사완료!');
+    showToast('✓ 클립보드에 복사됐어요');
   });
 }
 
 // ══════════════════════════════════════════
 // FU TRACKER
 // ══════════════════════════════════════════
-const RETURN_STAGES=['접수확인','문자발송','수거대기','수거완료','마켓처리완료','도매처반품','도매처환불완료'];
-const EXCHANGE_STAGES=['접수확인','사진/사유확인','배송비안내','입금확인','수거대기','수거완료','재발송완료'];
-
 let fuCases = JSON.parse(localStorage.getItem('fu-cases')||'[]');
 let fuFilter = 'all';
 
-function saveFu(){ localStorage.setItem('fu-cases', JSON.stringify(fuCases)); }
+const returnStages=['반품접수','사진요청','귀책확인','마켓승인대기','수거완료','환불확인'];
+const exchangeStages=['교환접수','배송비입금','수거완료','재발송','완료'];
 
-function openFuModal(){
-  document.getElementById('fu-modal').classList.add('active');
-  // set today + 3 days as default deadline
-  const d=new Date(); d.setDate(d.getDate()+3);
-  document.getElementById('fu-deadline').value=d.toISOString().split('T')[0];
-}
+function saveFu(){ localStorage.setItem('fu-cases',JSON.stringify(fuCases)); }
+
+function openFuModal(){ document.getElementById('fu-modal').classList.add('active'); }
 function closeFuModal(){ document.getElementById('fu-modal').classList.remove('active'); }
 
 function addFuCase(){
-  const type=document.getElementById('fu-type').value;
-  const market=document.getElementById('fu-market').value;
   const product=document.getElementById('fu-product').value.trim();
-  const order=document.getElementById('fu-order').value.trim();
-  const deadline=document.getElementById('fu-deadline').value;
-  const note=document.getElementById('fu-note').value.trim();
-  if(!product){ showToast('상품명을 입력해주세요'); return; }
-  fuCases.unshift({
-    id: Date.now(), type, market, product, order, deadline, note,
-    stage: 0,
-    stages: type==='return'?RETURN_STAGES:EXCHANGE_STAGES,
-    created: new Date().toISOString().split('T')[0]
-  });
-  saveFu(); renderFu(); closeFuModal();
-  ['fu-product','fu-order','fu-note'].forEach(id=>document.getElementById(id).value='');
+  if(!product){showToast('상품명을 입력해 주세요');return;}
+  const c={
+    id:Date.now(), type:document.getElementById('fu-type').value,
+    market:document.getElementById('fu-market').value,
+    product, order:document.getElementById('fu-order').value.trim(),
+    deadline:document.getElementById('fu-deadline').value,
+    note:document.getElementById('fu-note').value.trim(),
+    stage:0, createdAt:new Date().toISOString()
+  };
+  fuCases.unshift(c); saveFu(); renderFu(); closeFuModal();
+  ['fu-product','fu-order','fu-deadline','fu-note'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   showToast('✓ 케이스가 추가되었습니다');
 }
 
-function advanceStage(id){
-  const c=fuCases.find(c=>c.id===id); if(!c) return;
-  if(c.stage<c.stages.length-1){ c.stage++; saveFu(); renderFu(); showToast('✓ 단계 업데이트'); }
-}
 function deleteFuCase(id){
   fuCases=fuCases.filter(c=>c.id!==id); saveFu(); renderFu();
+}
+
+function advanceStage(id){
+  const c=fuCases.find(x=>x.id===id); if(!c) return;
+  const stages=c.type==='return'?returnStages:exchangeStages;
+  if(c.stage<stages.length-1){ c.stage++; saveFu(); renderFu(); }
+}
+
+function setStage(id, idx){
+  const c=fuCases.find(x=>x.id===id); if(!c) return;
+  c.stage=idx; saveFu(); renderFu();
+}
+
+function getDaysLeft(deadline){
+  if(!deadline) return null;
+  const diff=Math.ceil((new Date(deadline)-new Date())/(1000*60*60*24));
+  return diff;
 }
 
 function filterFu(f, el){
@@ -1082,94 +1067,88 @@ function filterFu(f, el){
   renderFu();
 }
 
-function getDaysLeft(deadline){
-  if(!deadline) return null;
-  const d=new Date(deadline), today=new Date();
-  today.setHours(0,0,0,0); d.setHours(0,0,0,0);
-  return Math.floor((d-today)/(1000*60*60*24));
-}
-
 function renderFu(){
-  const list=document.getElementById('fu-list'); if(!list) return;
+  const list=document.getElementById('fu-list');
   let filtered=fuCases;
-  if(fuFilter==='return') filtered=fuCases.filter(c=>c.type==='return');
-  else if(fuFilter==='exchange') filtered=fuCases.filter(c=>c.type==='exchange');
-  else if(fuFilter==='urgent') filtered=fuCases.filter(c=>{const dl=getDaysLeft(c.deadline);return dl!==null&&dl<=2&&c.stage<c.stages.length-1;});
-  else if(fuFilter==='done') filtered=fuCases.filter(c=>c.stage===c.stages.length-1);
+  const stages_fn=c=>c.type==='return'?returnStages:exchangeStages;
+  if(fuFilter==='return') filtered=filtered.filter(c=>c.type==='return');
+  else if(fuFilter==='exchange') filtered=filtered.filter(c=>c.type==='exchange');
+  else if(fuFilter==='urgent') filtered=filtered.filter(c=>{
+    const d=getDaysLeft(c.deadline); return d!==null&&d<=3&&c.stage<stages_fn(c).length-1;
+  });
+  else if(fuFilter==='done') filtered=filtered.filter(c=>c.stage>=stages_fn(c).length-1);
 
-  if(filtered.length===0){
-    list.innerHTML=`<div class="fu-empty">케이스가 없습니다<br><span style="font-size:12px;margin-top:4px;display:block">"+ 케이스 추가" 버튼으로 추가하세요</span></div>`;
+  if(!filtered.length){
+    list.innerHTML=`<div class="fu-empty">케이스가 없어요 ✨</div>`;
     return;
   }
+
   list.innerHTML=filtered.map(c=>{
-    const days=getDaysLeft(c.deadline);
-    const isDone=c.stage===c.stages.length-1;
-    const isUrgent=!isDone&&days!==null&&days<=1;
-    const isWarning=!isDone&&days!==null&&days<=3&&days>1;
-    let badgeClass='deadline-ok', badgeText=days===null?'기한없음':days===0?'D-DAY':days<0?`D+${Math.abs(days)}`:`D-${days}`;
-    if(isDone){badgeClass='deadline-done';badgeText='✓ 완료';}
-    else if(isUrgent) badgeClass='deadline-urgent';
-    else if(isWarning) badgeClass='deadline-warning';
-    const stages=c.stages.map((s,i)=>`<span class="fu-stage ${i<c.stage?'done':i===c.stage?'current':''}" onclick="setStage(${c.id},${i})">${i<c.stage?'✓ ':i===c.stage?'▶ ':''}${s}</span>`).join('');
-    return `<div class="fu-card ${isUrgent?'urgent':isWarning?'warning':''}">
-      <div class="fu-card-top">
-        <div class="fu-card-info">
-          <div class="fu-card-market">${c.type==='return'?'↩️ 반품':'🔄 교환'} · ${c.market}</div>
-          <div class="fu-card-product">${c.product}</div>
-          ${c.order?`<div class="fu-card-order">${c.order}</div>`:''}
-          ${c.note?`<div style="font-size:12px;color:var(--text-dim);margin-top:3px">📝 ${c.note}</div>`:''}
+    const stages=stages_fn(c);
+    const daysLeft=getDaysLeft(c.deadline);
+    let urgencyClass='', badgeClass='deadline-ok', badgeText='';
+    if(c.stage>=stages.length-1){badgeClass='deadline-done';badgeText='완료';}
+    else if(daysLeft!==null){
+      if(daysLeft<0){urgencyClass='urgent';badgeClass='deadline-urgent';badgeText=`D+${Math.abs(daysLeft)}`;}
+      else if(daysLeft<=3){urgencyClass='urgent';badgeClass='deadline-urgent';badgeText=`D-${daysLeft}`;}
+      else if(daysLeft<=7){urgencyClass='warning';badgeClass='deadline-warning';badgeText=`D-${daysLeft}`;}
+      else{badgeText=`D-${daysLeft}`;}
+    }
+    const stagesHtml=stages.map((s,i)=>{
+      let cls='fu-stage';
+      if(i<c.stage) cls+=' done';
+      else if(i===c.stage) cls+=' current';
+      return `<span class="${cls}" onclick="setStage(${c.id},${i})">${s}</span>`;
+    }).join('');
+    return `
+      <div class="fu-card ${urgencyClass}" id="fu-card-${c.id}">
+        <div class="fu-card-top">
+          <div class="fu-card-info">
+            <div class="fu-card-market">${c.type==='return'?'↩️ 반품':'🔄 교환'} · ${c.market}</div>
+            <div class="fu-card-product">${c.product}</div>
+            ${c.order?`<div class="fu-card-order">${c.order}</div>`:''}
+          </div>
+          ${daysLeft!==null||c.stage>=stages.length-1?`<span class="fu-deadline-badge ${badgeClass}">${badgeText}</span>`:''}
         </div>
-        <span class="fu-deadline-badge ${badgeClass}">${badgeText}</span>
+        <div class="fu-stages">${stagesHtml}</div>
+        ${c.note?`<div style="font-size:12px;color:var(--text-dim);margin-bottom:8px">📝 ${c.note}</div>`:''}
+        <div class="fu-card-actions">
+          <button class="fu-btn fu-btn-adv" onclick="advanceStage(${c.id})">→ 다음 단계</button>
+          <button class="fu-btn fu-btn-del" onclick="deleteFuCase(${c.id})">삭제</button>
+        </div>
       </div>
-      <div class="fu-stages">${stages}</div>
-      <div class="fu-card-actions">
-        ${!isDone?`<button class="fu-btn fu-btn-adv" onclick="advanceStage(${c.id})">→ 다음 단계</button>`:''}
-        <button class="fu-btn fu-btn-del" onclick="deleteFuCase(${c.id})">삭제</button>
-      </div>
-    </div>`;
+    `;
   }).join('');
 }
-function setStage(id,stage){
-  const c=fuCases.find(c=>c.id===id); if(!c) return;
-  c.stage=stage; saveFu(); renderFu();
-}
 
 // ══════════════════════════════════════════
-// WORKFLOW BAR
-// ══════════════════════════════════════════
-function toggleWf(el){ el.classList.toggle('done'); }
-function setDate(){
-  const d=new Date();
-  const days=['일','월','화','수','목','금','토'];
-  const str=`${d.getMonth()+1}/${d.getDate()}(${days[d.getDay()]})`;
-  document.getElementById('wf-date').textContent=str;
-}
-
-// ══════════════════════════════════════════
-// TOAST
+// UTILS
 // ══════════════════════════════════════════
 function showToast(msg){
-  const t=document.getElementById('toast'); if(!t) return;
+  const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+  setTimeout(()=>t.classList.remove('show'),2000);
 }
+function toggleWf(el){ el.classList.toggle('done'); }
 
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  // 날짜 표시
+  const now=new Date();
+  const wfDate=document.getElementById('wf-date');
+  if(wfDate) wfDate.textContent=`${now.getMonth()+1}/${now.getDate()}(${DAY[now.getDay()]})`;
+
+  // 이번 달 기본값
+  const costMonth=document.getElementById('cost-month');
+  if(costMonth) costMonth.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
   loadSettings();
   buildCostGrid();
-  // set default month
-  const now=new Date();
-  const m=document.getElementById('cost-month');
-  if(m) m.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
   calcCost();
-  setDate();
-  updateDayBanner();
-  refreshAll();
   renderFu();
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeFuModal(); });
+  refreshAll();
 });
 </script>
 </body>
