@@ -123,6 +123,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .total-amount{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--red)}
 .export-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;margin-top:10px}
 .export-btn:hover{border-color:var(--accent4);color:var(--accent4)}
+/* ─── FLOATING COPY BUTTON ─── */
+.float-copy-btn{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:300;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:14px 20px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.45);display:flex;align-items:center;gap:7px;transition:transform .15s,background .15s}
+.float-copy-btn:hover{background:#ff3d18;transform:translateY(-50%) scale(1.05)}
+.float-copy-btn:active{transform:translateY(-50%) scale(.95)}
+.float-copy-btn.hide{display:none}
+@media (max-width:680px){.float-copy-btn{right:12px;padding:13px 14px;border-radius:50%}.float-copy-btn .fcb-text{display:none}}
 /* ─── FU TRACKER ─── */
 .fu-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .fu-add-btn{background:var(--accent);color:#fff;border:none;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:9px 18px;border-radius:var(--r-sm);cursor:pointer;transition:background .15s}
@@ -234,7 +240,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <!-- ══════════ MAIN NAV ══════════ -->
 <div style="position:relative;z-index:1;padding:0 20px;background:var(--bg)">
   <nav class="main-nav">
-    <button class="main-nav-btn active" onclick="switchMain('sms',this)">📱 문자발송</button>
+    <button class="main-nav-btn active" onclick="switchMain('sms',this)">📱 고객 문자발송</button>
+    <button class="main-nav-btn" onclick="switchMain('supplier',this)">🏭 도매처 공급사 문자발송</button>
     <button class="main-nav-btn" onclick="switchMain('cost',this)">💰 비용계산</button>
     <button class="main-nav-btn" onclick="switchMain('fu',this)">🔄 반품·교환 FU</button>
     <button class="main-nav-btn" onclick="switchMain('manual',this)">📖 클로드 매뉴얼</button>
@@ -273,9 +280,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="sms-nav">
     <button class="sms-nav-btn active" onclick="switchSms('return-simple',this)">↩️ 반품 (단순변심)</button>
     <button class="sms-nav-btn" onclick="switchSms('return-reason',this)">🔍 반품 (사유확인)</button>
-    <button class="sms-nav-btn" onclick="switchSms('exchange',this)">🔄 교환</button>
     <button class="sms-nav-btn" onclick="switchSms('oos',this)">🚫 품절</button>
     <button class="sms-nav-btn" onclick="switchSms('option',this)">⚙️ 옵션변경</button>
+    <button class="sms-nav-btn" onclick="switchSms('exchange',this)">🔄 교환</button>
     <button class="sms-nav-btn" onclick="switchSms('delay',this)">⏰ 배송지연</button>
     <button class="sms-nav-btn" onclick="switchSms('zigzag',this)">🏷️ 지그재그 반품비</button>
     <button class="sms-nav-btn" onclick="switchSms('china',this)">🇨🇳 중국구매대행</button>
@@ -308,6 +315,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="step-btn active" onclick="switchStep('rr','B',this)"><span class="step-num">1</span>사진 요청</button>
       <button class="step-btn" onclick="switchStep('rr','C1',this)"><span class="step-num">2</span>판매자귀책 수거안내</button>
       <button class="step-btn" onclick="switchStep('rr','C2',this)"><span class="step-num">3</span>구매자귀책 반품비안내</button>
+      <button class="step-btn" onclick="switchStep('rr','D',this)"><span class="step-num">4</span>사유변경 확인</button>
     </div>
 
     <!-- B: 사진 요청 -->
@@ -357,6 +365,21 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         </div>
       </div>
       <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrC2-preview"></div><div class="char-count" id="rrC2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrC2')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','C2')">문자 복사</button></div></div>
+    </div>
+
+    <!-- D: 구매자귀책 → 사유변경 확인 -->
+    <div class="step-sec" id="rr-D">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:var(--green);font-size:13px;font-weight:700;padding:5px 14px;border-radius:6px">✅ 반품사유 변경 확인</span>
+        <span style="font-size:12px;color:var(--text-dim)">구매자 귀책으로 반품 사유를 변경해주셨을 때</span>
+      </div>
+      <div class="card">
+        <div class="card-title">반품 사유 확인 · 구매자 귀책 → 사유변경 확인</div>
+        <div class="field"><label>쇼핑몰명</label><input id="rrD-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','D')"></div>
+        <div class="field"><label>상품명 *</label><input id="rrD-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','D')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="rrD-order" type="text" oninput="updStep('rr','D')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="rrD-preview"></div><div class="char-count" id="rrD-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('rrD')">초기화</button><button class="btn btn-copy" onclick="copyStep('rr','D')">문자 복사</button></div></div>
     </div>
   </div>
 
@@ -484,17 +507,64 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
   <!-- ── 지그재그 반품배송비 ── -->
   <div class="sms-sec" id="sms-zigzag">
-    <div class="card">
-      <div class="card-title">지그재그 · 단순변심 반품 배송비 안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
-        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">왕복 배송비</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">7,000원</div></div>
-        <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">자동 차감</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">3,500원</div></div>
-        <div style="flex:1;background:rgba(255,92,53,.08);border:1px solid rgba(255,92,53,.2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">추가 입금</div><div style="font-size:15px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace">3,500원</div></div>
-      </div>
-      <div class="field"><label>상품명 *</label><input id="zz-product" type="text" placeholder="상품명 입력" oninput="upd('zz')"></div>
-      <div class="field"><label>주문번호 (선택)</label><input id="zz-order" type="text" oninput="upd('zz')"></div>
+    <div class="step-flow">
+      <button class="step-btn active" onclick="switchStep('zz','A',this)"><span class="step-num">1</span>반품비 안내</button>
+      <button class="step-btn" onclick="switchStep('zz','B',this)"><span class="step-num">2</span>입금확인·수거안내</button>
+      <button class="step-btn" onclick="switchStep('zz','C',this)"><span class="step-num">3</span>미입금 리마인드</button>
+      <button class="step-btn" onclick="switchStep('zz','D',this)"><span class="step-num">4</span>반품거절 사유</button>
     </div>
-    <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zz-preview"></div><div class="char-count" id="zz-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('zz')">초기화</button><button class="btn btn-copy" onclick="copy('zz')">문자 복사</button></div></div>
+
+    <!-- A: 반품비 안내 -->
+    <div class="step-sec active" id="zz-A">
+      <div class="card">
+        <div class="card-title">지그재그 · 단순변심 반품 배송비 안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">왕복 배송비</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">7,000원</div></div>
+          <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">자동 차감</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">3,500원</div></div>
+          <div style="flex:1;background:rgba(255,92,53,.08);border:1px solid rgba(255,92,53,.2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">추가 입금</div><div style="font-size:15px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace">3,500원</div></div>
+        </div>
+        <div class="field"><label>상품명 *</label><input id="zzA-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','A')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="zzA-order" type="text" oninput="updStep('zz','A')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zzA-preview"></div><div class="char-count" id="zzA-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('zzA')">초기화</button><button class="btn btn-copy" onclick="copyStep('zz','A')">문자 복사</button></div></div>
+    </div>
+
+    <!-- B: 입금확인 → 수거안내 -->
+    <div class="step-sec" id="zz-B">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:var(--green);font-size:13px;font-weight:700;padding:5px 14px;border-radius:6px">✅ 입금확인 · 수거안내</span>
+        <span style="font-size:12px;color:var(--text-dim)">반품비 계좌 입금 확인됐을 때</span>
+      </div>
+      <div class="card">
+        <div class="card-title">지그재그 · 입금확인 · 수거안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div class="field"><label>상품명 *</label><input id="zzB-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','B')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="zzB-order" type="text" oninput="updStep('zz','B')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zzB-preview"></div><div class="char-count" id="zzB-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('zzB')">초기화</button><button class="btn btn-copy" onclick="copyStep('zz','B')">문자 복사</button></div></div>
+    </div>
+
+    <!-- C: 미입금 리마인드 -->
+    <div class="step-sec" id="zz-C">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:var(--yellow);font-size:13px;font-weight:700;padding:5px 14px;border-radius:6px">⏰ 미입금 리마인드</span>
+        <span style="font-size:12px;color:var(--text-dim)">반품비 안내 후 입금이 확인되지 않을 때</span>
+      </div>
+      <div class="card">
+        <div class="card-title">지그재그 · 반품비 미입금 리마인드 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div class="field"><label>상품명 *</label><input id="zzC-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','C')"></div>
+        <div class="field"><label>주문번호 (선택)</label><input id="zzC-order" type="text" oninput="updStep('zz','C')"></div>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zzC-preview"></div><div class="char-count" id="zzC-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="resetStep('zzC')">초기화</button><button class="btn btn-copy" onclick="copyStep('zz','C')">문자 복사</button></div></div>
+    </div>
+
+    <!-- D: 반품거절 사유 (마켓 입력용 문구) -->
+    <div class="step-sec" id="zz-D">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:var(--red);font-size:13px;font-weight:700;padding:5px 14px;border-radius:6px">🚫 반품거절 사유</span>
+        <span style="font-size:12px;color:var(--text-dim)">지그재그 마켓 '반품 거절' 사유 입력란에 붙여넣을 문구</span>
+      </div>
+      <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="zzD-preview"></div><div class="char-count" id="zzD-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-copy" style="flex:1" onclick="copyStep('zz','D')">문자 복사</button></div></div>
+    </div>
   </div>
 
   <!-- ── 중국구매대행 ── -->
@@ -530,6 +600,29 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 </div>
 <!-- /SMS TAB -->
+
+<!-- ══════════ 도매처 공급사 문자발송 TAB ══════════ -->
+<div class="main-sec" id="sec-supplier">
+
+  <!-- ── 발주 요청 ── -->
+  <div class="card">
+    <div class="card-title">도매처 · 발주 요청</div>
+    <div class="field"><label>도매처명 *</label><input id="sup1-supplier" type="text" placeholder="예) 도매꾹" oninput="upd('sup1')"></div>
+    <div class="field"><label>상품명 *</label><input id="sup1-product" type="text" placeholder="상품명 입력" oninput="upd('sup1')"></div>
+    <div class="field"><label>수량 *</label><input id="sup1-qty" type="text" placeholder="예) 20" oninput="upd('sup1')"></div>
+  </div>
+  <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="sup1-preview"></div><div class="char-count" id="sup1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('sup1')">초기화</button><button class="btn btn-copy" onclick="copy('sup1')">문자 복사</button></div></div>
+
+  <!-- ── 재고 / 재입고 문의 ── -->
+  <div class="card">
+    <div class="card-title">도매처 · 재고·재입고 문의</div>
+    <div class="field"><label>도매처명 *</label><input id="sup2-supplier" type="text" placeholder="예) 오너클랜" oninput="upd('sup2')"></div>
+    <div class="field"><label>상품명 *</label><input id="sup2-product" type="text" placeholder="상품명 입력" oninput="upd('sup2')"></div>
+  </div>
+  <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="sup2-preview"></div><div class="char-count" id="sup2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('sup2')">초기화</button><button class="btn btn-copy" onclick="copy('sup2')">문자 복사</button></div></div>
+
+</div>
+<!-- /SUPPLIER TAB -->
 
 <!-- ══════════ 비용계산 TAB ══════════ -->
 <div class="main-sec" id="sec-cost">
@@ -645,6 +738,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 <div class="toast" id="toast"></div>
+<button class="float-copy-btn" id="float-copy-btn" onclick="copyCurrent()"><span>📋</span><span class="fcb-text">문자 복사</span></button>
 
 <script>
 // ══════════════════════════════════════════
@@ -652,8 +746,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 // ══════════════════════════════════════════
 let G = {
   bank: localStorage.getItem('g-bank') || '카카오뱅크',
-  account: localStorage.getItem('g-account') || '',
-  holder: localStorage.getItem('g-holder') || '',
+  account: localStorage.getItem('g-account') || '3333-19-1332435',
+  holder: localStorage.getItem('g-holder') || '유화림',
   shop: localStorage.getItem('g-shop') || '',
 };
 let dlyType = '폭주';
@@ -702,6 +796,20 @@ function switchMain(id, el){
   document.getElementById('sec-'+id).classList.add('active');
   document.querySelectorAll('.main-nav-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  const fcb=document.getElementById('float-copy-btn');
+  if(fcb) fcb.classList.toggle('hide', !(id==='sms'||id==='supplier'));
+}
+function copyCurrent(){
+  const active=document.querySelector('.main-sec.active');
+  if(!active) return;
+  const boxes=active.querySelectorAll('.preview-box');
+  for(const box of boxes){
+    if(box.offsetParent!==null){
+      const id=box.id.replace('-preview','');
+      if(builders[id]){ copy(id); return; }
+    }
+  }
+  showToast('복사할 문자를 찾을 수 없어요');
 }
 function switchSms(id, el){
   document.querySelectorAll('.sms-sec').forEach(s=>s.classList.remove('active'));
@@ -755,6 +863,28 @@ function buildRrC2(plain){
   const bank=gBank(), acc=gAccount(), holder=gHolder();
   if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 신청 확인하였으나, 전달해 주신 사항은\n구매자 귀책에 해당됩니다.\n\n이에 따라 단순변심 반품에 해당되어\n반품 비용 7,000원이 발생됩니다.\n\n입금 후 반품 절차가 진행되며,\n반품 진행하시는 경우 하기 계좌로 입금 바랍니다.\n\n🏦 ${bank} ${acc}\n예금주: ${holder}\n\n감사합니다.`;
   return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n반품 신청 확인하였으나, 전달해 주신 사항은\n구매자 귀책에 해당됩니다.\n\n이에 따라 단순변심 반품에 해당되어\n반품 비용 ${hl('7,000원')}이 발생됩니다.\n\n입금 후 반품 절차가 진행되며,\n반품 진행하시는 경우 하기 계좌로 입금 바랍니다.\n\n🏦 ${hl(bank)} ${hl(acc)}\n예금주: ${hl(holder)}\n\n감사합니다.`;
+}
+
+// rrD - 구매자귀책 반품사유 변경 확인
+function buildRrD(plain){
+  const shop=gShop('rrD-shop'), product=gV('rrD-product')||'[상품명]';
+  const order=gV('rrD-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n반품 사유 변경확인되었습니다. 이에 반품절차 안내해드리도록 하겠습니다.\n제품은 기사님께서 회수하실 수 있도록 포장 부탁드리며,\n반품 접수 후 3일 이내 방문 예정입니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl('반품 사유 변경확인')}되었습니다. 이에 반품절차 안내해드리도록 하겠습니다.\n제품은 기사님께서 회수하실 수 있도록 포장 부탁드리며,\n${hl('반품 접수 후 3일 이내')} 방문 예정입니다.\n\n수거 완료 후 마켓 정책에 따라 신속하게 환불 처리됩니다.\n감사합니다.`;
+}
+
+// 도매처 공급사 - 발주 요청
+function buildSup1(plain){
+  const supplier=gV('sup1-supplier')||'[도매처명]', product=gV('sup1-product')||'[상품명]', qty=gV('sup1-qty')||'[수량]';
+  if(plain) return `안녕하세요, ${supplier} 담당자님.\n\n${product} ${qty}개 발주 요청드립니다.\n확인 후 회신 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, ${hl(supplier)} 담당자님.\n\n${hl(product)} ${hl(qty+'개')} 발주 요청드립니다.\n확인 후 회신 부탁드립니다.\n\n감사합니다.`;
+}
+
+// 도매처 공급사 - 재고/재입고 문의
+function buildSup2(plain){
+  const supplier=gV('sup2-supplier')||'[도매처명]', product=gV('sup2-product')||'[상품명]';
+  if(plain) return `안녕하세요, ${supplier} 담당자님.\n\n${product} 재고 및 재입고 일정 확인 부탁드립니다.\n\n빠른 확인 부탁드리며, 감사합니다.`;
+  return `안녕하세요, ${hl(supplier)} 담당자님.\n\n${hl(product)} 재고 및 재입고 일정 확인 부탁드립니다.\n\n빠른 확인 부탁드리며, 감사합니다.`;
 }
 
 // 교환 builders
@@ -829,13 +959,35 @@ function buildDly(plain){
   return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 주문해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${reasonText}\n\n제품 많이 기다리셨을텐데 죄송합니다.\n문의사항이 있으시면 언제든지 연락 주세요. 감사합니다.`;
 }
 
-// 지그재그
-function buildZz(plain){
-  const product=gV('zz-product')||'[상품명]';
-  const order=gV('zz-order'), oStr=order?`(주문번호: ${order}) `:'';
+// 지그재그 A - 반품비 안내
+function buildZzA(plain){
+  const product=gV('zzA-product')||'[상품명]';
+  const order=gV('zzA-order'), oStr=order?`(주문번호: ${order}) `:'';
   const acc=gAccount(), holder=gHolder(), bank=gBank();
   if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 7,000원이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 3,500원을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${bank} ${acc} (${holder})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
   return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 ${hl('7,000원')}이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 ${hl('3,500원')}을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
+}
+
+// 지그재그 B - 입금확인 → 수거안내
+function buildZzB(plain){
+  const product=gV('zzB-product')||'[상품명]';
+  const order=gV('zzB-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n입금확인되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 3일 내 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl('입금확인')}되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 ${hl('3일 내')} 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
+}
+
+// 지그재그 C - 미입금 리마인드
+function buildZzC(plain){
+  const product=gV('zzC-product')||'[상품명]';
+  const order=gV('zzC-order'), oStr=order?`(주문번호: ${order}) `:'';
+  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n지그재그 반품비 안내드렸으나, 아직 입금이 확인되지 않아 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n지그재그 반품비 안내드렸으나, ${hl('아직 입금이 확인되지 않아')} 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
+}
+
+// 지그재그 D - 반품거절 사유 (마켓 입력용, 고정 문구)
+function buildZzD(plain){
+  if(plain) return `고객님께 반품 배송비를 안내드렸으나 안내드린 기한 내 입금이 확인되지 않아 부득이하게 반품이 거절 처리되었습니다.\n\n추가 문의사항 있으시면 언제든지 편하게 연락 주세요.`;
+  return `고객님께 반품 배송비를 안내드렸으나 안내드린 기한 내 입금이 확인되지 않아 ${hl('부득이하게 반품이 거절 처리')}되었습니다.\n\n추가 문의사항 있으시면 언제든지 편하게 연락 주세요.`;
 }
 
 // 중국대행 - 경동택배비
@@ -860,10 +1012,12 @@ function buildCnIntl(plain){
 // RENDER / UPDATE
 // ══════════════════════════════════════════
 const builders = {
-  rs: buildRs, oos: buildOos, opt: buildOpt, dly: buildDly, zz: buildZz,
-  rrB: buildRrB, rrC1: buildRrC1, rrC2: buildRrC2,
+  rs: buildRs, oos: buildOos, opt: buildOpt, dly: buildDly,
+  zzA: buildZzA, zzB: buildZzB, zzC: buildZzC, zzD: buildZzD,
+  rrB: buildRrB, rrC1: buildRrC1, rrC2: buildRrC2, rrD: buildRrD,
   exE1: buildExE1, exE1b: buildExE1b, exE2: buildExE2, exE3: buildExE3, exG: buildExG,
   cnKdx: buildCnKdx, cnIntl: buildCnIntl,
+  sup1: buildSup1, sup2: buildSup2,
 };
 
 function render(id){
