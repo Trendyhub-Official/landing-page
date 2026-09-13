@@ -123,6 +123,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .total-amount{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--red)}
 .export-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text-mid);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;margin-top:10px}
 .export-btn:hover{border-color:var(--accent4);color:var(--accent4)}
+/* ─── MARKET SHORTCUT LINKS ─── */
+.market-links{position:fixed;right:22px;top:14%;z-index:250;display:flex;flex-direction:column;gap:6px}
+.market-links.hide{display:none}
+.market-link{min-width:76px;padding:8px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-mid);text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:transform .15s,border-color .15s,color .15s;white-space:nowrap}
+.market-link:hover{transform:scale(1.05);border-color:var(--accent);color:var(--accent)}
+@media (max-width:680px){.market-links{right:8px;top:auto;bottom:92px;flex-direction:row;flex-wrap:wrap;max-width:220px;justify-content:flex-end}.market-link{min-width:0;padding:7px 9px;font-size:11px}}
 /* ─── FLOATING COPY BUTTON ─── */
 .float-copy-btn{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:300;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:14px 20px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.45);display:flex;align-items:center;gap:7px;transition:transform .15s,background .15s}
 .float-copy-btn:hover{background:#ff3d18;transform:translateY(-50%) scale(1.05)}
@@ -259,19 +265,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     </div>
     <div class="bank-btns" id="bank-btns">
       <button class="bank-btn active" onclick="selectBank('카카오뱅크',this)">카카오뱅크</button>
-      <button class="bank-btn" onclick="selectBank('국민은행',this)">국민은행</button>
-      <button class="bank-btn" onclick="selectBank('신한은행',this)">신한은행</button>
-      <button class="bank-btn" onclick="selectBank('우리은행',this)">우리은행</button>
-      <button class="bank-btn" onclick="selectBank('하나은행',this)">하나은행</button>
-      <button class="bank-btn" onclick="selectBank('기업은행',this)">기업은행</button>
-      <button class="bank-btn" onclick="selectBank('농협은행',this)">농협은행</button>
-      <button class="bank-btn" onclick="selectBank('토스뱅크',this)">토스뱅크</button>
-      <button class="bank-btn" onclick="selectBank('케이뱅크',this)">케이뱅크</button>
     </div>
-    <div class="settings-row">
+    <div class="settings-row" style="grid-template-columns:1fr 1fr">
       <div class="field"><label>계좌번호 *</label><input id="g-account" type="text" placeholder="3333-01-1234567" oninput="gUpdate()"></div>
       <div class="field"><label>예금주 *</label><input id="g-holder" type="text" placeholder="홍길동" oninput="gUpdate()"></div>
-      <div class="field"><label>쇼핑몰명 (기본값) *</label><input id="g-shop" type="text" placeholder="네이버 스마트스토어" oninput="gUpdate()"></div>
     </div>
     <button class="save-btn" onclick="saveSettings()">💾 설정 저장</button>
   </div>
@@ -294,7 +291,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="card">
       <div class="card-title">반품 안내 · 단순변심</div>
       <div class="day-banner" id="day-banner-rs"></div>
-      <div class="field"><label>쇼핑몰명</label><input id="rs-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('rs')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="rs-shop" onchange="upd('rs')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>상품명 *</label><input id="rs-product" type="text" placeholder="예) 재활용 비닐봉투 50매 60L" oninput="upd('rs')"></div>
       <div class="field"><label>주문번호 (선택)</label><input id="rs-order" type="text" placeholder="입력 시 문자에 포함됩니다" oninput="upd('rs')"></div>
     </div>
@@ -328,7 +325,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="card">
         <div class="card-title">반품 사유 확인 · 사진 요청</div>
         <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="rrB-safe" onchange="updStep('rr','B')"><span class="toggle-slider"></span></label></div>
-        <div class="field"><label>쇼핑몰명</label><input id="rrB-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','B')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="rrB-shop" onchange="updStep('rr','B')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="rrB-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','B')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="rrB-order" type="text" placeholder="선택" oninput="updStep('rr','B')"></div>
       </div>
@@ -343,7 +340,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card">
         <div class="card-title">반품 사유 확인 · 판매자 귀책 → 수거 안내</div>
-        <div class="field"><label>쇼핑몰명</label><input id="rrC1-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','C1')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="rrC1-shop" onchange="updStep('rr','C1')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="rrC1-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','C1')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="rrC1-order" type="text" oninput="updStep('rr','C1')"></div>
       </div>
@@ -358,7 +355,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card">
         <div class="card-title">반품 사유 확인 · 구매자 귀책 → 반품비 안내</div>
-        <div class="field"><label>쇼핑몰명</label><input id="rrC2-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','C2')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="rrC2-shop" onchange="updStep('rr','C2')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="rrC2-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','C2')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="rrC2-order" type="text" oninput="updStep('rr','C2')"></div>
         <div style="background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.15);border-radius:var(--r-sm);padding:9px 12px;font-size:12px;color:var(--text-mid);margin-bottom:12px">
@@ -376,7 +373,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       </div>
       <div class="card">
         <div class="card-title">반품 사유 확인 · 구매자 귀책 → 사유변경 확인</div>
-        <div class="field"><label>쇼핑몰명</label><input id="rrD-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('rr','D')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="rrD-shop" onchange="updStep('rr','D')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="rrD-product" type="text" placeholder="상품명 입력" oninput="updStep('rr','D')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="rrD-order" type="text" oninput="updStep('rr','D')"></div>
       </div>
@@ -399,7 +396,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="card">
         <div class="card-title">교환 · 배송비 안내 (고객 부담)</div>
         <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="exE1-safe" onchange="updStep('ex','E1')"><span class="toggle-slider"></span></label></div>
-        <div class="field"><label>쇼핑몰명</label><input id="exE1-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E1')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="exE1-shop" onchange="updStep('ex','E1')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="exE1-product" type="text" placeholder="상품명 입력" oninput="updStep('ex','E1')"></div>
         <div class="field-row">
           <div class="field"><label>주문번호 (선택)</label><input id="exE1-order" type="text" oninput="updStep('ex','E1')"></div>
@@ -414,7 +411,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-sec" id="ex-E1b">
       <div class="card">
         <div class="card-title">교환 · 입금 확인</div>
-        <div class="field"><label>쇼핑몰명</label><input id="exE1b-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E1b')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="exE1b-shop" onchange="updStep('ex','E1b')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="exE1b-product" type="text" placeholder="상품명 입력" oninput="updStep('ex','E1b')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="exE1b-order" type="text" oninput="updStep('ex','E1b')"></div>
       </div>
@@ -426,7 +423,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <div class="card">
         <div class="card-title">교환 · 사진 요청 (판매자 귀책 확인)</div>
         <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="exE2-safe" onchange="updStep('ex','E2')"><span class="toggle-slider"></span></label></div>
-        <div class="field"><label>쇼핑몰명</label><input id="exE2-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E2')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="exE2-shop" onchange="updStep('ex','E2')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="exE2-product" type="text" oninput="updStep('ex','E2')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="exE2-order" type="text" oninput="updStep('ex','E2')"></div>
       </div>
@@ -437,7 +434,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-sec" id="ex-E3">
       <div class="card">
         <div class="card-title">교환 · 판매자 귀책 → 수거 안내</div>
-        <div class="field"><label>쇼핑몰명</label><input id="exE3-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','E3')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="exE3-shop" onchange="updStep('ex','E3')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="exE3-product" type="text" oninput="updStep('ex','E3')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="exE3-order" type="text" oninput="updStep('ex','E3')"></div>
       </div>
@@ -448,7 +445,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-sec" id="ex-G">
       <div class="card">
         <div class="card-title">교환 · 재발송 완료</div>
-        <div class="field"><label>쇼핑몰명</label><input id="exG-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('ex','G')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="exG-shop" onchange="updStep('ex','G')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="exG-product" type="text" oninput="updStep('ex','G')"></div>
         <div class="field-row">
           <div class="field"><label>주문번호 (선택)</label><input id="exG-order" type="text" oninput="updStep('ex','G')"></div>
@@ -463,7 +460,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="sms-sec" id="sms-oos">
     <div class="card">
       <div class="card-title">품절 안내</div>
-      <div class="field"><label>쇼핑몰명</label><input id="oos-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('oos')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="oos-shop" onchange="upd('oos')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>상품명 *</label><input id="oos-product" type="text" placeholder="상품명 입력" oninput="upd('oos')"></div>
       <div class="field"><label>주문번호 (선택)</label><input id="oos-order" type="text" oninput="upd('oos')"></div>
     </div>
@@ -475,7 +472,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="card">
       <div class="card-title">옵션변경 안내</div>
       <div class="toggle-row"><span class="toggle-label-text">안심번호 발송</span><label class="toggle"><input type="checkbox" id="opt-safe" onchange="upd('opt')"><span class="toggle-slider"></span></label></div>
-      <div class="field"><label>쇼핑몰명</label><input id="opt-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('opt')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="opt-shop" onchange="upd('opt')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>상품명 *</label><input id="opt-product" type="text" placeholder="상품명 입력" oninput="upd('opt')"></div>
       <div class="field"><label>주문번호 (선택)</label><input id="opt-order" type="text" oninput="upd('opt')"></div>
       <div class="field-row">
@@ -490,7 +487,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div class="sms-sec" id="sms-delay">
     <div class="card">
       <div class="card-title">배송지연 안내</div>
-      <div class="field"><label>쇼핑몰명</label><input id="dly-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('dly')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="dly-shop" onchange="upd('dly')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>상품명 *</label><input id="dly-product" type="text" placeholder="상품명 입력" oninput="upd('dly')"></div>
       <div class="field"><label>주문번호 (선택)</label><input id="dly-order" type="text" oninput="upd('dly')"></div>
       <div class="field">
@@ -518,12 +515,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <!-- A: 반품비 안내 -->
     <div class="step-sec active" id="zz-A">
       <div class="card">
-        <div class="card-title">지그재그 · 단순변심 반품 배송비 안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div class="card-title">반품 배송비 안내 <span class="badge badge-zigzag">기본값: 지그재그</span></div>
         <div style="display:flex;gap:8px;margin-bottom:12px">
           <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">왕복 배송비</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">7,000원</div></div>
           <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">자동 차감</div><div style="font-size:15px;font-weight:700;font-family:'Space Mono',monospace">3,500원</div></div>
           <div style="flex:1;background:rgba(255,92,53,.08);border:1px solid rgba(255,92,53,.2);border-radius:8px;padding:10px;text-align:center"><div style="font-size:11px;color:var(--text-dim);margin-bottom:3px">추가 입금</div><div style="font-size:15px;font-weight:700;color:var(--accent);font-family:'Space Mono',monospace">3,500원</div></div>
         </div>
+        <div class="field"><label>쇼핑몰명</label><select id="zzA-shop" onchange="updStep('zz','A')"><option>쿠팡</option><option>스마트스토어</option><option selected>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="zzA-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','A')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="zzA-order" type="text" oninput="updStep('zz','A')"></div>
       </div>
@@ -537,7 +535,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <span style="font-size:12px;color:var(--text-dim)">반품비 계좌 입금 확인됐을 때</span>
       </div>
       <div class="card">
-        <div class="card-title">지그재그 · 입금확인 · 수거안내 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div class="card-title">반품비 입금확인 · 수거안내 <span class="badge badge-zigzag">기본값: 지그재그</span></div>
+        <div class="field"><label>쇼핑몰명</label><select id="zzB-shop" onchange="updStep('zz','B')"><option>쿠팡</option><option>스마트스토어</option><option selected>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="zzB-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','B')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="zzB-order" type="text" oninput="updStep('zz','B')"></div>
       </div>
@@ -551,7 +550,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
         <span style="font-size:12px;color:var(--text-dim)">반품비 안내 후 입금이 확인되지 않을 때</span>
       </div>
       <div class="card">
-        <div class="card-title">지그재그 · 반품비 미입금 리마인드 <span class="badge badge-zigzag">지그재그 전용</span></div>
+        <div class="card-title">반품비 미입금 리마인드 <span class="badge badge-zigzag">기본값: 지그재그</span></div>
+        <div class="field"><label>쇼핑몰명</label><select id="zzC-shop" onchange="updStep('zz','C')"><option>쿠팡</option><option>스마트스토어</option><option selected>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="zzC-product" type="text" placeholder="상품명 입력" oninput="updStep('zz','C')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="zzC-order" type="text" oninput="updStep('zz','C')"></div>
       </div>
@@ -578,7 +578,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-sec active" id="cn-kdx">
       <div class="card">
         <div class="card-title">경동택배비 발생 · 입금 안내 <span class="badge badge-china">중국대행</span></div>
-        <div class="field"><label>쇼핑몰명</label><input id="cnKdx-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('cn','kdx')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="cnKdx-shop" onchange="updStep('cn','kdx')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="cnKdx-product" type="text" placeholder="상품명 입력" oninput="updStep('cn','kdx')"></div>
         <div class="field-row">
           <div class="field"><label>주문번호 (선택)</label><input id="cnKdx-order" type="text" oninput="updStep('cn','kdx')"></div>
@@ -591,7 +591,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="step-sec" id="cn-intl">
       <div class="card">
         <div class="card-title">해외배송 소요 안내 <span class="badge badge-china">중국대행</span></div>
-        <div class="field"><label>쇼핑몰명</label><input id="cnIntl-shop" type="text" placeholder="전역설정 자동 사용" oninput="updStep('cn','intl')"></div>
+        <div class="field"><label>쇼핑몰명</label><select id="cnIntl-shop" onchange="updStep('cn','intl')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
         <div class="field"><label>상품명 *</label><input id="cnIntl-product" type="text" placeholder="상품명 입력" oninput="updStep('cn','intl')"></div>
         <div class="field"><label>주문번호 (선택)</label><input id="cnIntl-order" type="text" oninput="updStep('cn','intl')"></div>
       </div>
@@ -637,7 +637,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <!-- ── 일반 안내·공지 ── -->
     <div class="card">
       <div class="card-title">기타 · 일반 안내·공지</div>
-      <div class="field"><label>쇼핑몰명</label><input id="misc1-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('misc1')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="misc1-shop" onchange="upd('misc1')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>안내 내용 *</label><textarea id="misc1-body" rows="3" placeholder="예) 배송 시스템 점검으로 12/24 발송이 하루 지연됩니다." oninput="upd('misc1')"></textarea></div>
     </div>
     <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="misc1-preview"></div><div class="char-count" id="misc1-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('misc1')">초기화</button><button class="btn btn-copy" onclick="copy('misc1')">문자 복사</button></div></div>
@@ -645,7 +645,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <!-- ── 구매 감사 인사 ── -->
     <div class="card">
       <div class="card-title">기타 · 구매 감사 인사</div>
-      <div class="field"><label>쇼핑몰명</label><input id="misc2-shop" type="text" placeholder="전역설정 자동 사용" oninput="upd('misc2')"></div>
+      <div class="field"><label>쇼핑몰명</label><select id="misc2-shop" onchange="upd('misc2')"><option value="">선택</option><option>쿠팡</option><option>스마트스토어</option><option>지그재그</option><option>에이블리</option><option>11번가</option><option>롯데온</option><option>G마켓</option><option>옥션</option><option>카카오톡스토어</option><option>토스쇼핑</option><option>그립</option><option>테무</option><option>도매꾹</option></select></div>
       <div class="field"><label>상품명 *</label><input id="misc2-product" type="text" placeholder="상품명 입력" oninput="upd('misc2')"></div>
     </div>
     <div class="card"><div class="card-title">미리보기</div><div class="preview-box" id="misc2-preview"></div><div class="char-count" id="misc2-count"></div><div class="divider"></div><div class="actions"><button class="btn btn-reset" onclick="reset('misc2')">초기화</button><button class="btn btn-copy" onclick="copy('misc2')">문자 복사</button></div></div>
@@ -657,6 +657,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 <!-- ══════════ 도매처 공급사 문자발송 TAB ══════════ -->
 <div class="main-sec" id="sec-supplier">
+
+  <a href="http://domeggook.com/main/member/mem_formLogin.php" target="_blank" style="display:block;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;text-decoration:none;color:var(--text);font-size:13px;margin-bottom:16px" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🏭 도매꾹 로그인 바로가기 →</a>
 
   <!-- ── 발주 요청 ── -->
   <div class="card">
@@ -758,17 +760,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="manual-step"><div class="manual-step-num">TIP 02</div><div class="manual-step-title">로컬 + 넷리파이 병행</div><div class="manual-step-desc">PC에서도 더블클릭으로 열 수 있어요. 인터넷 없어도 됨. 폰에서 쓸 때는 Netlify URL 북마크 사용.</div></div>
     <div class="manual-step"><div class="manual-step-num">TIP 03</div><div class="manual-step-title">데이터 주의사항</div><div class="manual-step-desc">FU 케이스, 비용 데이터는 브라우저 localStorage에 저장돼요. 브라우저 데이터를 지우면 초기화됩니다. 중요한 데이터는 "내보내기"로 백업해두세요.</div></div>
   </div>
-  <div class="manual-section">
-    <h2>🔗 자주 쓰는 링크 모음</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <a href="https://seller.coupang.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">📦 쿠팡 판매자센터</a>
-      <a href="https://sell.smartstore.naver.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🟢 스마트스토어 센터</a>
-      <a href="https://www.domae9.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🏭 도매꾹</a>
-      <a href="https://www.ownerclan.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🏭 오너클랜</a>
-      <a href="https://app.netlify.com" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🌐 Netlify 대시보드</a>
-      <a href="https://claude.ai" target="_blank" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text);font-size:13px;transition:border-color .15s;display:block" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">🤖 Claude.ai</a>
-    </div>
-  </div>
 </div>
 <!-- /MANUAL TAB -->
 
@@ -792,6 +783,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="market-links" id="market-links">
+  <a class="market-link" href="https://wing.coupang.com" target="_blank" title="쿠팡 윙(판매자센터)">쿠팡</a>
+  <a class="market-link" href="https://sell.smartstore.naver.com" target="_blank" title="스마트스토어 센터">스마트스토어</a>
+  <a class="market-link" href="https://shop.zigzag.kr/#!/login" target="_blank" title="지그재그">지그재그</a>
+  <a class="market-link" href="https://my.a-bly.com" target="_blank" title="에이블리 파트너스">에이블리</a>
+  <a class="market-link" href="https://soffice.11st.co.kr" target="_blank" title="11번가 셀러오피스">11번가</a>
+  <a class="market-link" href="https://store.lotteon.com/cm/main/index_SO.wsp" target="_blank" title="롯데온">롯데온</a>
+  <a class="market-link" href="https://www.esmplus.com/" target="_blank" title="G마켓·옥션 ESM PLUS">G마켓·옥션</a>
+  <a class="market-link" href="https://store-sell.kakao.com/dashboard" target="_blank" title="카카오톡 스토어">카카오톡스토어</a>
+  <a class="market-link" href="https://shopping-seller.toss.im" target="_blank" title="토스쇼핑">토스쇼핑</a>
+  <a class="market-link" href="https://www.grip.show/" target="_blank" title="그립">그립</a>
+  <a class="market-link" href="https://kr.seller.temu.com/home.html" target="_blank" title="테무">테무</a>
+</div>
 <button class="float-copy-btn" id="float-copy-btn" onclick="copyCurrent()"><span>📋</span><span class="fcb-text">문자 복사</span></button>
 
 <script>
@@ -802,7 +806,6 @@ let G = {
   bank: localStorage.getItem('g-bank') || '카카오뱅크',
   account: localStorage.getItem('g-account') || '3333-19-1332435',
   holder: localStorage.getItem('g-holder') || '유화림',
-  shop: localStorage.getItem('g-shop') || '',
 };
 let dlyType = '폭주';
 
@@ -811,7 +814,7 @@ function hl(t){ return `<span class="hl">${t}</span>`; }
 function gAccount(){ return gV('g-account')||G.account||'[계좌번호]'; }
 function gHolder(){ return gV('g-holder')||G.holder||'[예금주명]'; }
 function gBank(){ return G.bank||'카카오뱅크'; }
-function gShop(id){ return gV(id)||G.shop||'[쇼핑몰명]'; }
+function gShop(id){ return gV(id)||'[쇼핑몰명]'; }
 
 const safeLine = '\n\n※ 본 문자는 안심번호로 발송되어 회신 시 확인이 어렵습니다.\n성함과 함께 본 문자에 답변해 주시면 확인 가능합니다.';
 
@@ -823,11 +826,10 @@ function selectBank(name, el){
 }
 function gUpdate(){ refreshAll(); }
 function saveSettings(){
-  G.account=gV('g-account'); G.holder=gV('g-holder'); G.shop=gV('g-shop');
+  G.account=gV('g-account'); G.holder=gV('g-holder');
   localStorage.setItem('g-bank',G.bank);
   localStorage.setItem('g-account',G.account);
   localStorage.setItem('g-holder',G.holder);
-  localStorage.setItem('g-shop',G.shop);
   document.getElementById('bank-saved-badge').classList.add('show');
   showToast('✓ 설정이 저장되었습니다');
   refreshAll();
@@ -835,7 +837,6 @@ function saveSettings(){
 function loadSettings(){
   document.getElementById('g-account').value=G.account;
   document.getElementById('g-holder').value=G.holder;
-  document.getElementById('g-shop').value=G.shop;
   document.querySelectorAll('.bank-btn').forEach(b=>{
     if(b.textContent===G.bank) b.classList.add('active'); else b.classList.remove('active');
   });
@@ -852,6 +853,8 @@ function switchMain(id, el){
   el.classList.add('active');
   const fcb=document.getElementById('float-copy-btn');
   if(fcb) fcb.classList.toggle('hide', !(id==='sms'||id==='supplier'));
+  const ml=document.getElementById('market-links');
+  if(ml) ml.classList.toggle('hide', id!=='sms');
 }
 function copyCurrent(){
   const active=document.querySelector('.main-sec.active');
@@ -1031,27 +1034,30 @@ function buildDly(plain){
 
 // 지그재그 A - 반품비 안내
 function buildZzA(plain){
+  const shop=gV('zzA-shop')||'지그재그';
   const product=gV('zzA-product')||'[상품명]';
   const order=gV('zzA-order'), oStr=order?`(주문번호: ${order}) `:'';
   const acc=gAccount(), holder=gHolder(), bank=gBank();
-  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 7,000원이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 3,500원을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${bank} ${acc} (${holder})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
-  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 ${hl('7,000원')}이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 ${hl('3,500원')}을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 7,000원이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 3,500원을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${bank} ${acc} (${holder})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n단순변심 반품의 경우 왕복 배송비 ${hl('7,000원')}이 발생합니다.\n환불 시 3,500원은 자동 차감되며,\n나머지 ${hl('3,500원')}을 아래 계좌로 입금해 주시면\n수거 후 환불 처리해 드리겠습니다.\n\n🏦 ${hl(bank)} ${hl(acc)} (${hl(holder)})\n\n쇼핑에 불편을 드려 죄송합니다. 감사합니다.`;
 }
 
 // 지그재그 B - 입금확인 → 수거안내
 function buildZzB(plain){
+  const shop=gV('zzB-shop')||'지그재그';
   const product=gV('zzB-product')||'[상품명]';
   const order=gV('zzB-order'), oStr=order?`(주문번호: ${order}) `:'';
-  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n입금확인되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 3일 내 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
-  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl('입금확인')}되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 ${hl('3일 내')} 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n입금확인되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 3일 내 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl('입금확인')}되어 반품 절차 진행 안내드리겠습니다.\n택배기사님 ${hl('3일 내')} 방문하여 회수예정이오니,\n제품 원활히 회수될 수 있도록 포장 부탁드립니다.\n\n감사합니다.`;
 }
 
 // 지그재그 C - 미입금 리마인드
 function buildZzC(plain){
+  const shop=gV('zzC-shop')||'지그재그';
   const product=gV('zzC-product')||'[상품명]';
   const order=gV('zzC-order'), oStr=order?`(주문번호: ${order}) `:'';
-  if(plain) return `안녕하세요, 고객님! 지그재그 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n지그재그 반품비 안내드렸으나, 아직 입금이 확인되지 않아 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
-  return `안녕하세요, 고객님! ${hl('지그재그')} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n지그재그 반품비 안내드렸으나, ${hl('아직 입금이 확인되지 않아')} 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
+  if(plain) return `안녕하세요, 고객님! ${shop} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${oStr}${product}\n건으로 연락드립니다.\n\n${shop} 반품비 안내드렸으나, 아직 입금이 확인되지 않아 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
+  return `안녕하세요, 고객님! ${hl(shop)} 판매자입니다.\n\n고객님께서 반품 신청해 주신\n📦 ${order?hl(oStr):''}${product}\n건으로 연락드립니다.\n\n${hl(shop)} 반품비 안내드렸으나, ${hl('아직 입금이 확인되지 않아')} 확인 부탁드립니다.\n빠른 반품 처리가 될 수 있도록 확인 부탁드립니다.\n\n감사합니다.`;
 }
 
 // 지그재그 D - 반품거절 사유 (마켓 입력용, 고정 문구)
@@ -1164,8 +1170,7 @@ async function generateAiReply(){
   btn.disabled=true; btn.textContent='⏳ 생성 중...';
   preview.textContent='생성 중입니다...';
   try{
-    const shop=gShop('g-shop');
-    const prompt=`당신은 한국 이커머스 위탁판매 셀러의 CS 담당자입니다. 정중하고 따뜻한 존댓말로, 과장 없이 간결하게 고객 응대 문자를 작성해주세요.\n쇼핑몰명: ${shop}\n상황: ${input}\n\n문자 내용만 출력하고, 그 외 다른 설명이나 따옴표는 붙이지 마세요.`;
+    const prompt=`당신은 한국 이커머스 위탁판매 셀러의 CS 담당자입니다. 정중하고 따뜻한 존댓말로, 과장 없이 간결하게 고객 응대 문자를 작성해주세요.\n상황: ${input}\n\n문자 내용만 출력하고, 그 외 다른 설명이나 따옴표는 붙이지 마세요.`;
     const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
